@@ -12,7 +12,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.argusoft.form.security.filters.AuthFilter;
 import com.argusoft.form.security.filters.SchemaFilter;
 import com.argusoft.form.service.CustomUserDetailsService;
 
@@ -24,7 +26,17 @@ public class WebSecurityConfig {
     private CustomUserDetailsService customUserDetailsService;
 
     @Autowired
-    private SchemaFilter schemaFilter;
+    private AuthenticationConfiguration configuration;
+
+    @Bean
+    public SchemaFilter schemaFilter() throws Exception {
+        return new SchemaFilter(authenticationManager());
+    }
+
+    @Bean
+    public AuthFilter authFilter() throws Exception {
+        return new AuthFilter(authenticationManager());
+    }
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -48,7 +60,8 @@ public class WebSecurityConfig {
                 // .httpBasic(Customizer.withDefaults())
                 .exceptionHandling(c -> c
                         .authenticationEntryPoint(new AuthenticationFilterEntryPoint()))
-                // .addFilterAfter(schemaFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(authFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(schemaFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
@@ -71,7 +84,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+    public AuthenticationManager authenticationManager() throws Exception {
         return configuration.getAuthenticationManager();
     }
 

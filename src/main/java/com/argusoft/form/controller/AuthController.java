@@ -44,9 +44,12 @@ public class AuthController {
                             user.getUsername(), user.getPassword()));
             System.out.println("*************************************************************************");
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-          System.out.println(userDetails.getUsername());
+            System.out.println(userDetails.getUsername());
             System.out.println(authentication);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            System.out.println("*************************************************************************+++");
+
+            System.out.println(SecurityContextHolder.getContext().getAuthentication());
 
         } catch (Exception e) {
             System.out.println(e);

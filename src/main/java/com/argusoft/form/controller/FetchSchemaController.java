@@ -1,6 +1,9 @@
 package com.argusoft.form.controller;
 
+import java.sql.SQLException;
 import java.util.List;
+
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +20,8 @@ public class FetchSchemaController {
     private final FetchSchemaService fetchSchemaService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private DataSource dataSource;
 
     @Autowired
     public FetchSchemaController(FetchSchemaService fetchSchemaService, UserRepository userRepository,
@@ -32,6 +37,15 @@ public class FetchSchemaController {
         // System.out.println(user.getUsername());
         System.out.println("*******************************************");
         return fetchSchemaService.getSchemas();
+    }
+
+    @GetMapping("current-schema")
+    public String getCurrentSchema() throws SQLException {
+        String schemaName = dataSource.getConnection().getSchema();
+        System.out.println("Current Schema: " + schemaName);
+
+        System.out.println("*******************************************");
+        return schemaName;
     }
 
 }
