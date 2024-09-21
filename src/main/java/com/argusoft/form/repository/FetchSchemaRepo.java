@@ -23,26 +23,21 @@ public class FetchSchemaRepo {
     }
 
     public List<String> getSchemas() throws SQLException {
+        List<String> data = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement();) {
-
-            statement.execute("SELECT * FROM get_all_schemas()");
-            ResultSet resultSet = statement.getResultSet();
-
-            List<String> data = new ArrayList<>();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM get_all_schemas()")) {
 
             while (resultSet.next()) {
                 String value = resultSet.getString(1);
                 data.add(value);
             }
-            // connection.close();
-            return data;
-
         } catch (SQLException e) {
-            System.out.println("Error while fetching data : " + e.getMessage());
+            System.out.println("Error while fetching data: " + e.getMessage());
+            throw e;
         }
 
-        return null;
+        return data;
     }
 }

@@ -95,6 +95,13 @@ public class V1__Initial_creation extends BaseJavaMigration {
                     System.out.println("Error closing statement: " + e.getMessage());
                 }
             }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    System.out.println("Error closing statement: " + e.getMessage());
+                }
+            }
         }
     }
 }

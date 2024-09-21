@@ -31,7 +31,6 @@ public class SchemaFilter extends OncePerRequestFilter {
     @Autowired
     private UserRepository userRepository;
 
-
     private AuthenticationManager authManager;
 
     public SchemaFilter(AuthenticationManager authenticationManager) {

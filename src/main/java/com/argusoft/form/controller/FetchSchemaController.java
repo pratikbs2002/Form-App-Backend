@@ -1,5 +1,6 @@
 package com.argusoft.form.controller;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -45,14 +46,15 @@ public class FetchSchemaController {
     }
 
     @GetMapping("current-schema")
-    public ResponseEntity<?> getCurrentSchema() throws SQLException {
-        String schemaName = dataSource.getConnection().getSchema();
-        System.out.println("Current Schema: " + schemaName);
+    public ResponseEntity<?> getCurrentSchema() {
+        Map<String, String> responseMap = new HashMap<>();
 
-        System.out.println("*******************************************");
-        Map<String, String> mp = new HashMap<>();
-        mp.put("schemaName", schemaName);
-        return ResponseEntity.ok(mp);
+        try (Connection connection = dataSource.getConnection()) {
+            String schemaName = connection.getSchema();
+            responseMap.put("schemaName", schemaName);
+            return ResponseEntity.ok(responseMap);
+        } catch (SQLException e) {
+            return ResponseEntity.status(500).body("Error retrieving current schema");
+        }
     }
-
 }
