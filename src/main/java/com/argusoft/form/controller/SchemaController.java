@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ import com.argusoft.form.service.SchemaMappingService;
 
 @RestController
 @RequestMapping("/api/schema")
+@CrossOrigin("*")
 public class SchemaController {
 
     private final CreateAndMigrateService createAndMigrateService;
@@ -49,11 +51,11 @@ public class SchemaController {
 
             // To creation of schema ...
             try {
-                Connection connection = dataSource.getConnection();
-                String createSchemaSQL = "CREATE SCHEMA IF NOT EXISTS " + schemaId;
-                java.sql.Statement stmt = connection.createStatement();
-                stmt.execute(createSchemaSQL);
-                connection.close();
+                try (Connection connection = dataSource.getConnection()) {
+                    String createSchemaSQL = "CREATE SCHEMA IF NOT EXISTS " + schemaId;
+                    java.sql.Statement stmt = connection.createStatement();
+                    stmt.execute(createSchemaSQL);
+                }
             } catch (SQLException e) {
                 return new ResponseEntity<>(e.getMessage() + " : Error in Schema Creation ",
                         HttpStatus.INTERNAL_SERVER_ERROR);

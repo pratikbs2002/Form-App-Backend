@@ -36,7 +36,7 @@ public class CreateAndMigrateService {
         flyway.migrate();
 
         // } catch (SQLException e) {
-        //     throw e;
+        // throw e;
         // }
         return "Migrations applied successfully";
     }

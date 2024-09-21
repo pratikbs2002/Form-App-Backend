@@ -47,9 +47,11 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                // .cors(Customizer.withDefaults())
                 .csrf(c -> c.disable())
                 .authorizeHttpRequests(
-                        request -> request.requestMatchers("/register", "auth/login", "auth/logout").permitAll()
+                        request -> request.requestMatchers("/register", "auth/login", "auth/logout", "current-schema")
+                                .permitAll()
                                 .anyRequest()
                                 .authenticated())
                 // .formLogin(Customizer.withDefaults())

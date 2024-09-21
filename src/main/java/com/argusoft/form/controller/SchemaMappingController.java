@@ -14,7 +14,7 @@ import com.argusoft.form.service.SchemaMappingService;
 @RequestMapping("schema")
 public class SchemaMappingController {
 
-    private SchemaMappingService schemaMappingService;
+    private final SchemaMappingService schemaMappingService;
 
     public SchemaMappingController(SchemaMappingService schemaMappingService) {
         this.schemaMappingService = schemaMappingService;

@@ -1,13 +1,17 @@
 package com.argusoft.form.controller;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +19,7 @@ import com.argusoft.form.repository.UserRepository;
 import com.argusoft.form.service.FetchSchemaService;
 
 @RestController
+@CrossOrigin("*")
 public class FetchSchemaController {
 
     private final FetchSchemaService fetchSchemaService;
@@ -40,12 +45,14 @@ public class FetchSchemaController {
     }
 
     @GetMapping("current-schema")
-    public String getCurrentSchema() throws SQLException {
+    public ResponseEntity<?> getCurrentSchema() throws SQLException {
         String schemaName = dataSource.getConnection().getSchema();
         System.out.println("Current Schema: " + schemaName);
 
         System.out.println("*******************************************");
-        return schemaName;
+        Map<String, String> mp = new HashMap<>();
+        mp.put("schemaName", schemaName);
+        return ResponseEntity.ok(mp);
     }
 
 }

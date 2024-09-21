@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,7 +52,7 @@ public class AuthController {
 
             System.out.println(SecurityContextHolder.getContext().getAuthentication());
 
-        } catch (Exception e) {
+        } catch (AuthenticationException e) {
             System.out.println(e);
         }
         return ResponseEntity.ok("Login successful");

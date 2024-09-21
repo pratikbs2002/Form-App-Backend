@@ -24,9 +24,9 @@ public class FetchSchemaRepo {
 
     public List<String> getSchemas() throws SQLException {
 
-        try {
-            Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement();
+        try (Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();) {
+
             statement.execute("SELECT * FROM get_all_schemas()");
             ResultSet resultSet = statement.getResultSet();
 
@@ -39,7 +39,7 @@ public class FetchSchemaRepo {
             // connection.close();
             return data;
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("Error while fetching data : " + e.getMessage());
         }
 
