@@ -28,6 +28,7 @@ public class StartupRunner {
 
             for (int i = 1; i < schemas.size(); i++) {
                 try {
+                    System.out.println(schemas.get(i));
                     String result = createAndMigrateService.applyMigration(schemas.get(i));
                     System.out.println(schemas.get(i) + " : " + result);
 

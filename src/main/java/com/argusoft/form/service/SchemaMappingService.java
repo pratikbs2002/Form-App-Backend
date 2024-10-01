@@ -11,7 +11,7 @@ import com.argusoft.form.repository.SchemaMappingRepo;
 @Service
 public class SchemaMappingService {
 
-    private SchemaMappingRepo schemaMappingRepo;
+    private final SchemaMappingRepo schemaMappingRepo;
 
     public SchemaMappingService(SchemaMappingRepo schemaMappingRepo) {
         this.schemaMappingRepo = schemaMappingRepo;

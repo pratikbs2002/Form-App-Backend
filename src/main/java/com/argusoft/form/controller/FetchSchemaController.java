@@ -39,14 +39,20 @@ public class FetchSchemaController {
     }
 
     @GetMapping("current-schema")
-    public ResponseEntity<?> getCurrentSchema() {
+    public ResponseEntity<?> getCurrentSchema() throws SQLException {
+        System.out.println("In currrent schema");
+        System.out.println(dataSource.getConnection());
+        System.out.println();
         Map<String, String> responseMap = new HashMap<>();
 
         try (Connection connection = dataSource.getConnection()) {
+            
+            System.out.println(connection);
             String schemaName = connection.getSchema();
             responseMap.put("schemaName", schemaName);
             return ResponseEntity.ok(responseMap);
         } catch (SQLException e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.status(500).body("Error retrieving current schema");
         }
     }

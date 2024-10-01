@@ -50,7 +50,7 @@ public class WebSecurityConfig {
         return http
                 .csrf(c -> c.disable())
                 .authorizeHttpRequests(
-                        request -> request.requestMatchers("auth/register", "auth/login", "auth/logout", "current-schema")
+                        request -> request.requestMatchers("auth/register", "auth/login", "auth/logout","api/schema/**","/data3")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())

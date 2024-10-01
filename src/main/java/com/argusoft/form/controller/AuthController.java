@@ -45,9 +45,11 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         String createUserQuery = "CREATE USER " + user.getUsername() + " WITH PASSWORD '"
-                + passwordEncoder.encode(user.getPassword()) + "'";
+                + user.getPassword() + "'";
+        System.out.println(createUserQuery);
         String grantUsageQuery = "GRANT USAGE ON SCHEMA " + user.getSchemaName() + " TO " + user.getUsername();
         String grantPrivilegesQuery = "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA "
                 + user.getSchemaName() + " TO " + user.getUsername();
@@ -64,7 +66,7 @@ public class AuthController {
             stmt.executeUpdate(setDefaultPrivilegesQuery);
 
         } catch (SQLException e) {
-            return ResponseEntity.ok("Something Wrong!");
+            return ResponseEntity.ok(e.getMessage() + "Something Wrong!");
         }
 
         userService.registerNewUser(user);

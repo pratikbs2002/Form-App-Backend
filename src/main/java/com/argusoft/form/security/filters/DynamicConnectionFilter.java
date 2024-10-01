@@ -30,7 +30,6 @@ public class DynamicConnectionFilter extends OncePerRequestFilter {
     @Autowired
     private DataSource dataSource;
 
-
     @Autowired
     private DynamicDataSource dynamicDataSource;
 
@@ -44,7 +43,7 @@ public class DynamicConnectionFilter extends OncePerRequestFilter {
         // String username = request.getHeader("Username");
         System.out.println(request.getRequestURI());
 
-        if (request.getRequestURI().equals("/auth/register")) {
+        if (request.getRequestURI().equals("/auth/register") || request.getRequestURI().equals("/data3") || request.getRequestURI().contains("/api/schema/mg")) {
             filterChain.doFilter(request, response);
         } else {
             if (SecurityContextHolder.getContext().getAuthentication() != null) {
@@ -67,7 +66,6 @@ public class DynamicConnectionFilter extends OncePerRequestFilter {
                                     user.getPassword());
                             System.out.println(dynamicDataSource.getResolvedDataSources());
                         } else {
-
                             throw new Exception("User Not Found");
                         }
 

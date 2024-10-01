@@ -19,14 +19,6 @@ public class CreateAndMigrateService {
     }
 
     public String applyMigration(String schemaId) throws Exception {
-
-        // try {
-        // Connection connection = dataSource.getConnection();
-        // String schemaId = "SCHEMA_" + UUID.randomUUID().toString().replace('-', '_');
-        // String createSchemaSQL = "CREATE SCHEMA IF NOT EXISTS " + schemaId;
-        // Statement stmt = connection.createStatement();
-        // stmt.execute(createSchemaSQL);
-        // connection.close();
         Flyway flyway = Flyway.configure()
                 .dataSource(dataSource)
                 .schemas(schemaId)
@@ -35,9 +27,6 @@ public class CreateAndMigrateService {
 
         flyway.migrate();
 
-        // } catch (SQLException e) {
-        // throw e;
-        // }
         return "Migrations applied successfully";
     }
 
