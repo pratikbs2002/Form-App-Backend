@@ -9,7 +9,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -17,7 +16,6 @@ public class FetchSchemaRepo {
 
     private final DataSource dataSource;
 
-    @Autowired
     public FetchSchemaRepo(DataSource dataSource) {
         this.dataSource = dataSource;
     }

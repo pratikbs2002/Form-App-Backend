@@ -65,4 +65,9 @@ public class User {
         this.schemaName = schemaName;
     }
 
+    @Override
+    public String toString() {
+        return "User [id=" + id + ", username=" + username + ", password=" + password + ", schemaName=" + schemaName
+                + "]";
+    }
 }

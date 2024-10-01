@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,10 +25,9 @@ import com.argusoft.form.service.SchemaMappingService;
 public class SchemaController {
 
     private final CreateAndMigrateService createAndMigrateService;
-    private SchemaMappingService schemaMappingService;
-    private DataSource dataSource;
+    private final SchemaMappingService schemaMappingService;
+    private final DataSource dataSource;
 
-    @Autowired
     public SchemaController(CreateAndMigrateService createAndMigrateService, SchemaMappingService schemaMappingService,
             DataSource dataSource) {
         this.createAndMigrateService = createAndMigrateService;

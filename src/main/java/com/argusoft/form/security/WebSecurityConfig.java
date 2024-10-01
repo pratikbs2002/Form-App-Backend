@@ -15,6 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.argusoft.form.security.filters.AuthFilter;
+import com.argusoft.form.security.filters.DynamicConnectionFilter;
 import com.argusoft.form.security.filters.SchemaFilter;
 import com.argusoft.form.service.CustomUserDetailsService;
 
@@ -33,6 +34,9 @@ public class WebSecurityConfig {
         return new SchemaFilter(authenticationManager());
     }
 
+    @Autowired
+    public DynamicConnectionFilter dynamicConnectionFilter;
+
     @Bean
     public AuthFilter authFilter() throws Exception {
         return new AuthFilter(authenticationManager());
@@ -41,29 +45,19 @@ public class WebSecurityConfig {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    // @Autowired
-    // private PasswordEncoder passwordEncoder;
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                // .cors(Customizer.withDefaults())
                 .csrf(c -> c.disable())
                 .authorizeHttpRequests(
-                        request -> request.requestMatchers("/register", "auth/login", "auth/logout", "current-schema")
+                        request -> request.requestMatchers("auth/register", "auth/login", "auth/logout", "current-schema")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())
-                // .formLogin(Customizer.withDefaults())
-                // .logout((c) -> c.logoutUrl("/logout")
-                // // .logoutSuccessUrl("/logout")
-                // .invalidateHttpSession(true)
-                // .clearAuthentication(true).permitAll())
-                // .httpBasic(Customizer.withDefaults())
                 .exceptionHandling(c -> c
                         .authenticationEntryPoint(new AuthenticationFilterEntryPoint()))
                 .addFilterBefore(authFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(schemaFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(dynamicConnectionFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
