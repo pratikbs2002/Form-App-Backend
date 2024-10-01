@@ -43,20 +43,31 @@ public class AuthController {
     @Autowired
     private DataSource dataSource;
 
+    // Register API to register Database user
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody User user) {
+
+        // Get Password From the user object and reset it with applying password encoder
+        // to encode it
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
+        // Query to create a new database user
         String createUserQuery = "CREATE USER " + user.getUsername() + " WITH PASSWORD '"
                 + user.getPassword() + "'";
-        System.out.println(createUserQuery);
+
+        // Query to Grant Usage of schema to the database user
         String grantUsageQuery = "GRANT USAGE ON SCHEMA " + user.getSchemaName() + " TO " + user.getUsername();
+
+        // Query to Grant privileges on existing tables to created user
         String grantPrivilegesQuery = "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA "
                 + user.getSchemaName() + " TO " + user.getUsername();
+
+        // Query to grant default privileges for future tables
         String setDefaultPrivilegesQuery = "ALTER DEFAULT PRIVILEGES IN SCHEMA " + user.getSchemaName()
                 + " GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO "
                 + user.getUsername();
 
+        // Create connection using datasource to execute above queries
         try (Connection connection = dataSource.getConnection();
                 Statement stmt = connection.createStatement()) {
 
@@ -69,6 +80,7 @@ public class AuthController {
             return ResponseEntity.ok(e.getMessage() + "Something Wrong!");
         }
 
+        // Add Database user details in public schema user table
         userService.registerNewUser(user);
         return ResponseEntity.ok("User registered successfully");
     }

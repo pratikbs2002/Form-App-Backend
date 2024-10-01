@@ -9,12 +9,18 @@ import com.argusoft.form.service.FetchSchemaService;
 
 import jakarta.annotation.PostConstruct;
 
+/*
+This is the startup file that runs first when the application starts. Here’s what it does:
+It retrieves the list of schemas from the database using FetchSchemaService and applies any necessary migrations if they haven't been applied yet.
+ */
+
 @Component
 public class StartupRunner {
 
     private final FetchSchemaService fetchSchemaService;
     private final CreateAndMigrateService createAndMigrateService;
 
+    // Contructor Injection
     public StartupRunner(FetchSchemaService fetchSchemaService, CreateAndMigrateService createAndMigrateService) {
         this.createAndMigrateService = createAndMigrateService;
         this.fetchSchemaService = fetchSchemaService;
@@ -24,8 +30,11 @@ public class StartupRunner {
     public void init() {
         try {
             System.out.println("Application has started!");
+
+            // Call GetSchemas Method
             List<String> schemas = getSchemas();
 
+            // Traverse the schemas list and Apply Migration using Migration Service
             for (int i = 1; i < schemas.size(); i++) {
                 try {
                     System.out.println(schemas.get(i));
@@ -41,6 +50,7 @@ public class StartupRunner {
         }
     }
 
+    // Method : To Get All Available Schemas in the Database
     public List<String> getSchemas() {
         return fetchSchemaService.getSchemas();
     }
