@@ -11,11 +11,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DataSourceManager {
-
     private final Map<String, DataSource> dataSources = new HashMap<>();
+
     @Autowired
     private DynamicDataSource dynamicDataSource;
 
+    // Method: To Take Datasource properties and set into target datasource of  abstract datasource routing
     public DataSource getDataSource(String schemaName, String username, String password) {
         return dataSources.computeIfAbsent(username, key -> {
             DataSource newDataSource = createDataSource(schemaName, username, password);
@@ -24,6 +25,7 @@ public class DataSourceManager {
         });
     }
 
+    // Method : To Create Datasource based on given properties
     private DataSource createDataSource(String schemaName, String username, String password) {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");

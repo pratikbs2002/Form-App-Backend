@@ -1,8 +1,10 @@
 package com.argusoft.form.security.datasource_config;
 
-
 import org.springframework.util.Assert;
 
+/*
+ * Context Holder to hold current user or tenant
+ */
 public class UserContextHolder {
 
     private static final ThreadLocal<String> context = new ThreadLocal<>();

@@ -40,9 +40,6 @@ public class DynamicConnectionFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // String username = request.getHeader("Username");
-        System.out.println(request.getRequestURI());
-
         if (request.getRequestURI().equals("/auth/register") || request.getRequestURI().equals("/data3") || request.getRequestURI().contains("/api/schema/mg")) {
             filterChain.doFilter(request, response);
         } else {

@@ -50,7 +50,9 @@ public class WebSecurityConfig {
         return http
                 .csrf(c -> c.disable())
                 .authorizeHttpRequests(
-                        request -> request.requestMatchers("auth/register", "auth/login", "auth/logout","api/schema/**","/data3")
+                        request -> request
+                                .requestMatchers("auth/register", "auth/login", "auth/logout", "api/schema/**",
+                                        "/data3")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())
@@ -61,6 +63,7 @@ public class WebSecurityConfig {
                 .build();
     }
 
+    //Bean for Bcrypt password encoder 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -71,6 +74,8 @@ public class WebSecurityConfig {
         return customUserDetailsService;
     }
 
+    // Bean to Configures DaoAuthenticationProvider with custom user details and
+    // password encoder. (Use Implementation of Authentication Provider)
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -79,6 +84,7 @@ public class WebSecurityConfig {
         return provider;
     }
 
+    // Bean to retrieve Authentication Manager to manage authentication process
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
         return configuration.getAuthenticationManager();
