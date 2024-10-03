@@ -34,7 +34,6 @@ public class FetchSchemaController {
     @GetMapping("schema")
     public List<String> getSchemas() {
         System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        System.out.println("*******************************************");
         return fetchSchemaService.getSchemas();
     }
 

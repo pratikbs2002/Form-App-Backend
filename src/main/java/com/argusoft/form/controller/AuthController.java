@@ -1,8 +1,6 @@
 package com.argusoft.form.controller;
 
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import javax.sql.DataSource;
 
@@ -21,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.argusoft.form.entity.User;
+import com.argusoft.form.service.DbUserRegistrationService;
 import com.argusoft.form.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,66 +42,44 @@ public class AuthController {
     @Autowired
     private DataSource dataSource;
 
+    @Autowired
+    private DbUserRegistrationService dbUserRegistrationService;
+
     // Register API to register Database user
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody User user) {
-
         // Get Password From the user object and reset it with applying password encoder
         // to encode it
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        // Query to create a new database user
-        String createUserQuery = "CREATE USER " + user.getUsername() + " WITH PASSWORD '"
-                + user.getPassword() + "'";
-
-        // Query to Grant Usage of schema to the database user
-        String grantUsageQuery = "GRANT USAGE ON SCHEMA " + user.getSchemaName() + " TO " + user.getUsername();
-
-        // Query to Grant privileges on existing tables to created user
-        String grantPrivilegesQuery = "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA "
-                + user.getSchemaName() + " TO " + user.getUsername();
-
-        // Query to grant default privileges for future tables
-        String setDefaultPrivilegesQuery = "ALTER DEFAULT PRIVILEGES IN SCHEMA " + user.getSchemaName()
-                + " GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO "
-                + user.getUsername();
-
-        // Create connection using datasource to execute above queries
-        try (Connection connection = dataSource.getConnection();
-                Statement stmt = connection.createStatement()) {
-
-            stmt.executeUpdate(createUserQuery);
-            stmt.executeUpdate(grantUsageQuery);
-            stmt.executeUpdate(grantPrivilegesQuery);
-            stmt.executeUpdate(setDefaultPrivilegesQuery);
-
+        // Create Databas user
+        try {
+            dbUserRegistrationService.registerDbUser(user);
         } catch (SQLException e) {
-            return ResponseEntity.ok(e.getMessage() + "Something Wrong!");
+            return ResponseEntity.ok(e.getMessage() + "Somthing Wrong!");
         }
 
         // Add Database user details in public schema user table
         userService.registerNewUser(user);
-        return ResponseEntity.ok("User registered successfully");
+        return ResponseEntity.ok(user + "User registered successfully");
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody User user) {
-        System.out.println("+++++++++++++++++++++++++++++" + user);
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             user.getUsername(), user.getPassword()));
-            System.out.println("*************************************************************************");
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             System.out.println(userDetails.getUsername());
             System.out.println(authentication);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println("*************************************************************************+++");
 
             System.out.println(SecurityContextHolder.getContext().getAuthentication());
 
         } catch (AuthenticationException e) {
             System.out.println(e);
+            return ResponseEntity.ok(e.getMessage());
         }
         return ResponseEntity.ok("Login successful");
     }

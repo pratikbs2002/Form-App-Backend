@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.argusoft.form.entity.Address;
+
 @RestController
 public class DataController {
     @Autowired
@@ -32,7 +34,7 @@ public class DataController {
 
     @GetMapping("/data")
     public ResponseEntity<?> getData() throws SQLException {
-        List<Object> results = new ArrayList<>();
+        List<Address> results = new ArrayList<>();
         System.out.println(dataSource.getConnection().getClientInfo("username"));
 
         try (Connection connection = dataSource.getConnection()) {
@@ -44,11 +46,10 @@ public class DataController {
         }
         try (Connection connection = dataSource.getConnection();
                 Statement stmt = connection.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM form")) {
+                ResultSet rs = stmt.executeQuery("SELECT * FROM address")) {
 
-            System.out.println(connection.getClientInfo("username"));
             while (rs.next()) {
-                results.add(rs.getObject(1));
+                results.add(new Address(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5)));
             }
             System.out.println("Data: " + results);
 
