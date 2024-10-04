@@ -11,20 +11,23 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.argusoft.form.security.datasource_config.UserContextHolder;
 import com.argusoft.form.service.FetchSchemaService;
+import com.argusoft.form.service.SchemaMappingService;
 
 @RestController
-@CrossOrigin("*")
 public class FetchSchemaController {
 
     private final FetchSchemaService fetchSchemaService;
 
     @Autowired
     private DataSource dataSource;
+
+    @Autowired
+    private SchemaMappingService schemaMappingService;
 
     public FetchSchemaController(FetchSchemaService fetchSchemaService) {
         this.fetchSchemaService = fetchSchemaService;
@@ -45,9 +48,11 @@ public class FetchSchemaController {
         Map<String, String> responseMap = new HashMap<>();
 
         try (Connection connection = dataSource.getConnection()) {
-            
-            System.out.println(connection);
-            String schemaName = connection.getSchema();
+
+            System.out.println("Current URL: " + connection.getMetaData().getURL());
+            String schemaUUID = connection.getSchema();
+            String schemaName = UserContextHolder.getSchema();
+            responseMap.put("schemaUUID", schemaUUID);
             responseMap.put("schemaName", schemaName);
             return ResponseEntity.ok(responseMap);
         } catch (SQLException e) {

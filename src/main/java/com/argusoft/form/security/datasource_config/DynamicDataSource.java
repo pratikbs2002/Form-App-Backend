@@ -21,7 +21,10 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
     // Method : To add datasource into TargetDataSources
     public void addDataSource(String username, DataSource dataSource) {
         targetDataSources.put(username, dataSource);
-        super.setTargetDataSources(targetDataSources);
+        Map<Object, Object> updatedTargetDataSources = new HashMap<>(super.getResolvedDataSources());
+        updatedTargetDataSources.putAll(targetDataSources);
+
+        super.setTargetDataSources(updatedTargetDataSources);
         super.afterPropertiesSet();
     }
 }

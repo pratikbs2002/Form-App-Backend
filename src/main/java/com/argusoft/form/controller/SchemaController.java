@@ -89,7 +89,7 @@ public class SchemaController {
             user.setSchemaName(schemaId);
             user.setPassword(passwordEncoder.encode("admin"));
 
-            // Create Databas user
+            // Create Database user
             try {
                 dbUserRegistrationService.registerDbUser(user);
             } catch (SQLException e) {

@@ -40,14 +40,13 @@ public class DataController {
         try (Connection connection = dataSource.getConnection()) {
             System.out.println("Datasource class: " + dataSource.getClass().getName());
             System.out.println("Connection URL: " + connection.getMetaData().getURL());
-            System.out.println("Database Product Name: " + connection.getMetaData().getDatabaseProductName());
+            System.out.println("Database User Name: " + connection.getMetaData().getUserName());
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
         }
         try (Connection connection = dataSource.getConnection();
                 Statement stmt = connection.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM address")) {
-
+                ResultSet rs = stmt.executeQuery("SELECT * FROM _09cde47d_1246_47d8_b880_712ae0500cf5.address")) {
             while (rs.next()) {
                 results.add(new Address(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5)));
             }
