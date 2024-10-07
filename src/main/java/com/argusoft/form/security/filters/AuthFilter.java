@@ -49,6 +49,9 @@ public class AuthFilter extends OncePerRequestFilter {
             String username = values[0];
             String password = values.length > 1 ? values[1] : null;
 
+            System.out.println("Username : " + username);
+            System.out.println("Password : " + password);
+
             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username,
                     password);
 
@@ -62,5 +65,5 @@ public class AuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
 
     }
-    
+
 }

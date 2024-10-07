@@ -10,4 +10,5 @@ import com.argusoft.form.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
+
 }

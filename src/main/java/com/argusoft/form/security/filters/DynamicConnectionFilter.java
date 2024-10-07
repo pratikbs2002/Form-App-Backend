@@ -53,7 +53,6 @@ public class DynamicConnectionFilter extends OncePerRequestFilter {
                     String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
                     System.out.println("\n=================> Username: " + username);
-                    System.out.println("Current Context : " + UserContextHolder.getString());
                     // System.out.println(dataSource.getClass().getName());
                     System.out.println("\n Default Datasource: " + dynamicDataSource.getResolvedDefaultDataSource());
                     System.out.println(
