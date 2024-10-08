@@ -11,7 +11,7 @@ import com.argusoft.form.entity.Schema;
 import com.argusoft.form.service.SchemaMappingService;
 
 @RestController
-@RequestMapping("schema")
+@RequestMapping("/api/schema-map")
 public class SchemaMappingController {
 
     private final SchemaMappingService schemaMappingService;

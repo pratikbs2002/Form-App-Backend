@@ -22,16 +22,6 @@ public class DataController {
     @Autowired
     private DataSource dataSource;
 
-    @GetMapping("/data3")
-    public ResponseEntity<?> getData3() throws SQLException {
-        return ResponseEntity.ok("Data without authentication");
-    }
-
-    @GetMapping("/data2")
-    public ResponseEntity<?> getData2() throws SQLException {
-        return ResponseEntity.ok("Data with authentication");
-    }
-
     @GetMapping("/data")
     public ResponseEntity<?> getData() throws SQLException {
         List<Address> results = new ArrayList<>();

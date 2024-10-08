@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.argusoft.form.security.datasource_config.UserContextHolder;
@@ -19,6 +20,7 @@ import com.argusoft.form.service.FetchSchemaService;
 import com.argusoft.form.service.SchemaMappingService;
 
 @RestController
+@RequestMapping("/api/fetch-schema/")
 public class FetchSchemaController {
 
     private final FetchSchemaService fetchSchemaService;
@@ -34,13 +36,13 @@ public class FetchSchemaController {
 
     }
 
-    @GetMapping("schema")
+    @GetMapping("/schema")
     public List<String> getSchemas() {
         System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         return fetchSchemaService.getSchemas();
     }
 
-    @GetMapping("current-schema")
+    @GetMapping("/current-schema")
     public ResponseEntity<?> getCurrentSchema() throws SQLException {
         System.out.println("In currrent schema");
         System.out.println(dataSource.getConnection());
