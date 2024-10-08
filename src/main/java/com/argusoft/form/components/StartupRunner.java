@@ -2,6 +2,10 @@ package com.argusoft.form.components;
 
 import java.util.List;
 
+import javax.sql.DataSource;
+
+import org.flywaydb.core.Flyway;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.argusoft.form.service.CreateAndMigrateService;
@@ -19,6 +23,8 @@ public class StartupRunner {
 
     private final FetchSchemaService fetchSchemaService;
     private final CreateAndMigrateService createAndMigrateService;
+    @Autowired
+    private DataSource dataSource;
 
     // Contructor Injection
     public StartupRunner(FetchSchemaService fetchSchemaService, CreateAndMigrateService createAndMigrateService) {
@@ -30,6 +36,17 @@ public class StartupRunner {
     public void init() {
         try {
             System.out.println("Application has started!");
+
+            System.out.println(dataSource.getClass().getName());
+            Flyway flyway = Flyway.configure()
+                    .dataSource(dataSource)
+                    .schemas("public")
+                    .locations("classpath:com/argusoft/form/publicmigrations")
+                    .table("public_migration")
+                    .baselineOnMigrate(true)
+                    .load();
+
+            flyway.migrate();
 
             // Call GetSchemas Method
             List<String> schemas = getSchemas();

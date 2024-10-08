@@ -23,6 +23,8 @@ public class CreateAndMigrateService {
                 .dataSource(dataSource)
                 .schemas(schemaId)
                 .locations("classpath:com/argusoft/form/migration")
+                .table("flyway_migration")
+                .baselineOnMigrate(true)
                 .load();
 
         flyway.migrate();

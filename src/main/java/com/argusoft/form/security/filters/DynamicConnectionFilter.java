@@ -45,8 +45,7 @@ public class DynamicConnectionFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             if (request.getRequestURI().equals("/auth/register")
-                    || request.getRequestURI().equals("/auth/login")
-                     || request.getRequestURI().contains("/api/schema/mg")) {
+                    || request.getRequestURI().equals("/auth/login")) {
                 filterChain.doFilter(request, response);
             } else {
                 if (SecurityContextHolder.getContext().getAuthentication() != null) {
