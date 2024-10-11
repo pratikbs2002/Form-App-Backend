@@ -12,7 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.argusoft.form.entity.User;
+import com.argusoft.form.service.CustomUserDetails;
 import com.argusoft.form.service.DbUserRegistrationService;
 import com.argusoft.form.service.UserService;
 
@@ -71,18 +71,17 @@ public class AuthController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             user.getUsername(), user.getPassword()));
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             System.out.println(userDetails.getUsername());
             System.out.println(authentication);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
             System.out.println(SecurityContextHolder.getContext().getAuthentication());
+            return ResponseEntity.ok(userDetails.getUser());
 
         } catch (AuthenticationException e) {
             System.out.println(e);
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
-        return ResponseEntity.ok("Login successful");
     }
 
     @PostMapping("/logout")
