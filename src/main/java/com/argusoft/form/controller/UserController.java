@@ -15,6 +15,8 @@ import com.argusoft.form.entity.User;
 import com.argusoft.form.service.DbUserRegistrationService;
 import com.argusoft.form.service.UserService;
 
+import jakarta.transaction.Transactional;
+
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -48,6 +50,7 @@ public class UserController {
     }
 
     @GetMapping("/add/admin")
+    @Transactional
     public ResponseEntity<?> addAdminUser(@RequestBody User user) {
         // Get Password From the user object and reset it with applying password encoder
         // to encode it

@@ -15,8 +15,8 @@ public class V2__intial_public_creation extends BaseJavaMigration {
                 String adminPassword = new BCryptPasswordEncoder().encode("admin");
                 String addRootUser = "CREATE USER global_admin WITH SUPERUSER PASSWORD '" + adminPassword + "'";
                 String insertSchemaName = "INSERT INTO public.schema_mapping_table (uuid_name, created_at, schema_name) VALUES ('public', NOW(), 'public')";
-                String insertRootUser = "INSERT INTO public.user (password, schema_name, username) VALUES ('"
-                                + adminPassword + "', 'public', 'global_admin')";
+                String insertRootUser = "INSERT INTO public.user (password, schema_name, username, role) VALUES ('"
+                                + adminPassword + "', 'public', 'global_admin', 'global_admin')";
                 String getAllSchema = """
                                 CREATE OR REPLACE FUNCTION get_all_schemas()
                                 RETURNS TABLE(schema_name TEXT) AS $$
