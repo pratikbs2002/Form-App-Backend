@@ -29,7 +29,7 @@ public class DataSourceManager {
     private DataSource createDataSource(String schemaName, String username, String password) {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
-        String url = "jdbc:postgresql://localhost:5432/FormApp?currentSchema=" +
+        String url = "jdbc:postgresql://localhost:5432/formapp?currentSchema=" +
                 schemaName;
         dataSource.setUrl(url);
         dataSource.setUsername(username);
