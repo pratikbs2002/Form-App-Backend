@@ -1,6 +1,8 @@
 package com.argusoft.form.controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -94,10 +97,16 @@ public class CreateFormController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> createForm(@RequestBody Map<String, Object> createForm) {
+    public ResponseEntity<String> createdddForm(@RequestBody Map<String, Object> createForm) {
+        System.out.println(createForm);
         CreateForm savedForm = new CreateForm();
-        savedForm.setAdminId(Long.parseLong(createForm.get("adminId").toString()));
-        savedForm.setId(Long.parseLong(createForm.get("id").toString()));
+        // System.out.println("+++++++++++++++++++++++"+createForm.get("questions"));
+        if (createForm.containsKey("adminId")) {
+            savedForm.setAdminId(Long.parseLong(createForm.get("adminId").toString()));
+        }
+        if (createForm.containsKey("id")) {
+            savedForm.setId(Long.parseLong(createForm.get("id").toString()));
+        }
 
         try {
             String questionsJson = objectMapper.writeValueAsString(createForm.get("questions"));
@@ -121,4 +130,30 @@ public class CreateFormController {
         }
     }
 
+    @PutMapping("edit/{id}")
+    public ResponseEntity<String> editForm(@RequestBody Map<String, Object> createForm, @PathVariable Long id) {
+        Optional<CreateForm> form = createFormService.findById(id);
+        if (form.isPresent()) {
+            CreateForm savedForm = new CreateForm();
+            if (createForm.containsKey("adminId")) {
+                savedForm.setAdminId(Long.parseLong(createForm.get("adminId").toString()));
+            }
+            if (createForm.containsKey("id")) {
+                savedForm.setId(Long.parseLong(createForm.get("id").toString()));
+            }
+
+            try {
+                String questionsJson = objectMapper.writeValueAsString(createForm.get("questions"));
+                savedForm.setQuestions(questionsJson);
+                System.out.println(createForm);
+                createFormService.updateForm(savedForm);
+
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid questions format");
+            }
+
+            return ResponseEntity.status(HttpStatus.CREATED).body("Saved");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Form Not Found!");
+    }
 }

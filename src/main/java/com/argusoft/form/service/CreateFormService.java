@@ -31,4 +31,9 @@ public class CreateFormService {
     public void deleteById(Long id) {
         createFormRepository.deleteById(id);
     }
+
+    public void updateForm(CreateForm createForm) {
+        createFormRepository.updateCreateForm(createForm.getId(), createForm.getAdminId(), createForm.getCreatedAt(),
+                createForm.getQuestions());
+    }   
 }

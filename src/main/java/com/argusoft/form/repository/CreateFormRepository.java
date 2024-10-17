@@ -18,4 +18,10 @@ public interface CreateFormRepository extends JpaRepository<CreateForm, Long> {
     @Modifying
     @Query(value = "INSERT INTO create_form (admin_id, created_at, questions) VALUES (:adminId, :createdAt, CAST(:questions AS jsonb))", nativeQuery = true)
     void insertCreateForm(Long adminId, LocalDateTime createdAt, String questions);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE create_form SET admin_id = :adminId, created_at = :createdAt, questions = CAST(:questions AS jsonb) WHERE id = :id", nativeQuery = true)
+    void updateCreateForm(Long id, Long adminId, LocalDateTime createdAt, String questions);
+
 }
