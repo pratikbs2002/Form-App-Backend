@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.argusoft.form.dto.FormDTO;
+import com.argusoft.form.dto.QuestionDTO;
 import com.argusoft.form.entity.CreateForm;
-import com.argusoft.form.entity.FormDTO;
-import com.argusoft.form.entity.QuestionDTO;
 import com.argusoft.form.service.CreateFormService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
