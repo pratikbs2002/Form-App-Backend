@@ -53,7 +53,7 @@ public class AuthController {
         // to encode it
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        // Create Databas user
+        // Create Database user
         try {
             dbUserRegistrationService.registerDbUser(user);
         } catch (SQLException e) {

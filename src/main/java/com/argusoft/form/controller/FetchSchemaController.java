@@ -44,14 +44,9 @@ public class FetchSchemaController {
 
     @GetMapping("/current-schema")
     public ResponseEntity<?> getCurrentSchema() throws SQLException {
-        System.out.println("In currrent schema");
-        System.out.println(dataSource.getConnection());
-        System.out.println();
         Map<String, String> responseMap = new HashMap<>();
 
         try (Connection connection = dataSource.getConnection()) {
-
-            System.out.println("Current URL: " + connection.getMetaData().getURL());
             String schemaUUID = connection.getSchema();
             String schemaName = UserContextHolder.getSchema();
             responseMap.put("schemaUUID", schemaUUID);
