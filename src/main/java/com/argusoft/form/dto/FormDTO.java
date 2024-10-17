@@ -1,9 +1,7 @@
-package com.argusoft.form.entity;
+package com.argusoft.form.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import jakarta.persistence.Column;
 
 public class FormDTO {
     private Long id;

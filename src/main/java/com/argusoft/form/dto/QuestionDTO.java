@@ -1,4 +1,4 @@
-package com.argusoft.form.entity;
+package com.argusoft.form.dto;
 
 import java.util.List;
 
