@@ -74,7 +74,6 @@ public class SchemaController {
             } catch (SQLException e) {
                 return new ResponseEntity<>(e.getMessage() + " : Error in Schema Creation ",
                         HttpStatus.INTERNAL_SERVER_ERROR);
-
             }
 
             // To add schema data into schema mapping table ...
@@ -87,6 +86,7 @@ public class SchemaController {
             User user = new User();
             user.setUsername(schemaId + "_" + schemaName + "_admin");
             user.setSchemaName(schemaId);
+            user.setRole("admin");
             user.setPassword(passwordEncoder.encode("admin"));
 
             // Create Database user

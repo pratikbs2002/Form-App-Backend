@@ -20,28 +20,51 @@ public class DbUserRegistrationService {
     public String registerDbUser(User user) throws SQLException {
         // Query to create a new database user
         String createUserQuery = "CREATE USER " + user.getUsername() + " WITH PASSWORD '"
-                + user.getPassword() + "'";
+                + user.getPassword() + "' CREATEROLE    " ;
 
         // Query to Grant Usage of schema to the database user
-        String grantUsageQuery = "GRANT USAGE ON SCHEMA " + user.getSchemaName() + " TO " + user.getUsername();
+        String grantSchemaUsageQuery = "GRANT USAGE ON SCHEMA " + user.getSchemaName() + " TO " + user.getUsername()
+                + " WITH GRANT OPTION";
 
         // Query to Grant privileges on existing tables to created user
-        String grantPrivilegesQuery = "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA "
-                + user.getSchemaName() + " TO " + user.getUsername();
+        String grantTablePrivilegesQuery = "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA "
+                + user.getSchemaName() + " TO " + user.getUsername() + " WITH GRANT OPTION";
 
         // Query to grant default privileges for future tables
-        String setDefaultPrivilegesQuery = "ALTER DEFAULT PRIVILEGES IN SCHEMA " + user.getSchemaName()
-                + " GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO "
-                + user.getUsername();
+        String setDefaultTablePrivilegesQuery = "ALTER DEFAULT PRIVILEGES IN SCHEMA " + user.getSchemaName()
+                + " GRANT ALL PRIVILEGES ON TABLES TO "
+                + user.getUsername() + " WITH GRANT OPTION";
+
+        // Query to Grant privileges on existing sequences to created user
+        String grantSequencePrivilegesQuery = "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA "
+                + user.getSchemaName() + " TO " + user.getUsername() + " WITH GRANT OPTION";
+
+        // Query to grant default privileges for future sequences
+        String setDefaultSequencePrivilegesQuery = "ALTER DEFAULT PRIVILEGES IN SCHEMA " + user.getSchemaName()
+                + " GRANT ALL PRIVILEGES ON SEQUENCES TO "
+                + user.getUsername() + " WITH GRANT OPTION";
+
+        // Query to Grant privileges on existing functions to created user
+        String grantFuntionPrivilegesQuery = "GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA "
+                + user.getSchemaName() + " TO " + user.getUsername() + " WITH GRANT OPTION";
+
+        // Query to grant default privileges for future functions
+        String setDefaultFunctionPrivilegesQuery = "ALTER DEFAULT PRIVILEGES IN SCHEMA " + user.getSchemaName()
+                + " GRANT ALL PRIVILEGES ON FUNCTIONS TO "
+                + user.getUsername() + " WITH GRANT OPTION";
 
         // Create connection using datasource to execute above queries
         try (Connection connection = dataSource.getConnection();
                 Statement stmt = connection.createStatement()) {
 
             stmt.executeUpdate(createUserQuery);
-            stmt.executeUpdate(grantUsageQuery);
-            stmt.executeUpdate(grantPrivilegesQuery);
-            stmt.executeUpdate(setDefaultPrivilegesQuery);
+            stmt.executeUpdate(grantSchemaUsageQuery);
+            stmt.executeUpdate(grantTablePrivilegesQuery);
+            stmt.executeUpdate(setDefaultTablePrivilegesQuery);
+            stmt.executeUpdate(grantSequencePrivilegesQuery);
+            stmt.executeUpdate(setDefaultSequencePrivilegesQuery);
+            stmt.executeUpdate(grantFuntionPrivilegesQuery);
+            stmt.executeUpdate(setDefaultFunctionPrivilegesQuery);
 
         } catch (SQLException e) {
             throw e;
