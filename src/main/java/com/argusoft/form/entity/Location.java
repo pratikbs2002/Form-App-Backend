@@ -32,7 +32,7 @@ public class Location {
     private List<Location> children;
 
     public Location() {
-        
+
     }
 
     public Location(Long id, String name, Location parent, List<Location> children) {
@@ -72,6 +72,11 @@ public class Location {
 
     public void setChildren(List<Location> children) {
         this.children = children;
+    }
+
+    @Override
+    public String toString() {
+        return "Location [id=" + id + ", name=" + name + ", parent=" + parent + ", children=" + children + "]";
     }
 
 }

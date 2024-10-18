@@ -1,6 +1,7 @@
 package com.argusoft.form.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,5 +33,20 @@ public class LocationService {
     // Fetch children
     public List<Location> findDirectChildren(Long parentId) {
         return locationRepository.findDirectChildren(parentId);
+    }
+
+    // add location
+    public Location addLocation(Location location) {
+        return locationRepository.save(location);
+    }
+
+    // find single row location
+    public Optional<Location> findLocationById(Long id) {
+        return locationRepository.findById(id);
+    }
+
+    // delete single row location
+    public void deleteLocation(Long id) {
+        locationRepository.deleteById(id);
     }
 }
