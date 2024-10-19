@@ -19,6 +19,7 @@ import com.argusoft.form.entity.Location;
 import com.argusoft.form.service.LocationService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/api/locations/")
@@ -45,6 +46,7 @@ public class LocationController {
             }
             locationDTOs.add(locationDTO);
         }
+        LocationDTO.sortById(locationDTOs);
         return locationDTOs;
     }
 
@@ -66,6 +68,7 @@ public class LocationController {
             }
             locationDTOs.add(locationDTO);
         }
+        LocationDTO.sortById(locationDTOs);
         return locationDTOs;
     }
 
@@ -84,5 +87,11 @@ public class LocationController {
     public ResponseEntity<?> deleteLocation(@PathVariable Long id) {
         locationService.deleteLocation(id);
         return ResponseEntity.ok("remove done");
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateLocation(@PathVariable Long id, @RequestBody String name) {
+        int res = locationService.updateLocation(id, name);
+        return ResponseEntity.ok(res);
     }
 }

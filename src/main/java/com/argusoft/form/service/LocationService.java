@@ -49,4 +49,9 @@ public class LocationService {
     public void deleteLocation(Long id) {
         locationRepository.deleteById(id);
     }
+
+    // update single row location
+    public int updateLocation(Long id, String name) {
+        return locationRepository.updateLocationName(id, name);
+    }
 }
