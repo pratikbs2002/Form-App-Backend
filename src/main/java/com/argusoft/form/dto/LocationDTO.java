@@ -1,5 +1,7 @@
 package com.argusoft.form.dto;
 
+import java.util.List;
+
 public class LocationDTO {
 
     private Long id;
@@ -7,8 +9,6 @@ public class LocationDTO {
     private String name;
 
     private Long parent_id;
-
-    // private List<LocationDTO> children;
 
     private boolean havingChild;
 
@@ -19,7 +19,7 @@ public class LocationDTO {
         this.id = id;
         this.name = name;
         this.parent_id = parent_id;
-        // this.children = children;
+
         this.havingChild = havingChild;
     }
 
@@ -47,14 +47,6 @@ public class LocationDTO {
         this.parent_id = parent_id;
     }
 
-    // public List<LocationDTO> getChildren() {
-    // return children;
-    // }
-
-    // public void setChildren(List<LocationDTO> children) {
-    // this.children = children;
-    // }
-
     public boolean isHavingChild() {
         return havingChild;
     }
@@ -67,5 +59,9 @@ public class LocationDTO {
     public String toString() {
         return "LocationDTO [id=" + id + ", name=" + name + ", parent_id=" + parent_id + ", havingChild=" + havingChild
                 + "]";
+    }
+
+    public static void sortById(List<LocationDTO> locations) {
+        locations.sort((l1, l2) -> l1.getId().compareTo(l2.getId()));
     }
 }
