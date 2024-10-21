@@ -15,7 +15,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
     // Tenant)
     @Override
     protected String determineCurrentLookupKey() {
-        return UserContextHolder.getString();
+        return UserContextHolder.getLookUp();
     }
 
     // Method : To add datasource into TargetDataSources

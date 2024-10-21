@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.argusoft.form.entity.DataSourceEntity;
 import com.argusoft.form.entity.Schema;
 import com.argusoft.form.entity.User;
 import com.argusoft.form.service.CreateAndMigrateService;
@@ -83,24 +84,45 @@ public class SchemaController {
             // After Schema Creation Apply Migration...
             String message = createAndMigrateService.applyMigration(schemaId);
 
-            User user = new User();
-            user.setUsername(schemaId + "_" + schemaName + "_admin");
-            user.setSchemaName(schemaId);
-            user.setRole("admin");
-            user.setPassword(passwordEncoder.encode("admin"));
+            // Start with the default user registration...
+            User adminUser = new User();
+            adminUser.setUsername(schemaId + "_" + schemaName + "_admin");
+            adminUser.setSchemaName(schemaId);
+            adminUser.setRole("admin");
+            adminUser.setPassword(passwordEncoder.encode("admin"));
 
-            // Create Database user
+            // Create Database Admin user
             try {
-                dbUserRegistrationService.registerDbUser(user);
+                dbUserRegistrationService.registerAdminDbUser(adminUser);
             } catch (SQLException e) {
                 return ResponseEntity.ok(e.getMessage() + "Somthing Wrong!");
             }
 
-            // Add Database user details in public schema user table
-            userService.registerNewUser(user);
+            // Add Database Admin user details in public schema user table
+            userService.registerNewUser(adminUser);
+
+            User reportingUser = new User();
+            reportingUser.setUsername(schemaId + "_" + schemaName + "_reporting_user");
+            reportingUser.setSchemaName(schemaId);
+            reportingUser.setRole("reporting_user");
+            reportingUser.setPassword(passwordEncoder.encode("rep"));
+
+            // Create Database Reporting user
+            try {
+                dbUserRegistrationService.registerReportingDbUser(reportingUser);
+            } catch (SQLException e) {
+                return ResponseEntity.ok(e.getMessage() + "Somthing Wrong!");
+            }
+
+            // Add Database Reporting user details in public schema user table
+            userService.registerNewUser(reportingUser);
+
+            // DataSourceEntity adminDatasource = new DataSourceEntity();
+            // adminDatasource.setSchemaName(schemaId);
+            // adminDatasource.setUsername();
 
             Map<String, Object> mp = new HashMap<>();
-            mp.put("User", user);
+            mp.put("User", reportingUser);
             mp.put("SchemaName", schemaName);
             mp.put("SchemaID", schemaId);
             mp.put("Message", message);

@@ -34,21 +34,24 @@ public class DataController {
         } catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());
         }
-        try (Connection connection = dataSource.getConnection();
-                Statement stmt = connection.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM _09cde47d_1246_47d8_b880_712ae0500cf5.address")) {
-            while (rs.next()) {
-                results.add(new Address(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5)));
-            }
-            System.out.println("Data: " + results);
+        // try (Connection connection = dataSource.getConnection();
+        // Statement stmt = connection.createStatement();
+        // ResultSet rs = stmt.executeQuery("SELECT * FROM
+        // _09cde47d_1246_47d8_b880_712ae0500cf5.address")) {
+        // while (rs.next()) {
+        // results.add(new Address(rs.getInt(1), rs.getString(2), rs.getString(3),
+        // rs.getString(4), rs.getInt(5)));
+        // }
+        // System.out.println("Data: " + results);
 
-            return ResponseEntity.ok(results);
+        // return ResponseEntity.ok(results);
 
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while fetching data.");
-        }
+        // } catch (SQLException ex) {
+        // System.out.println(ex.getMessage());
+        // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        // .body("An error occurred while fetching data.");
+        // }
+        return ResponseEntity.ok("d");
     }
 
 }

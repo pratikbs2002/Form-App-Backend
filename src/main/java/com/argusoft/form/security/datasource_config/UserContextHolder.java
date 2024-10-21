@@ -10,16 +10,16 @@ public class UserContextHolder {
     private static final ThreadLocal<String> context = new ThreadLocal<>();
     private static final ThreadLocal<String> schema = new ThreadLocal<>();
 
-    public static void set(String String) {
+    public static void setLookUp(String String) {
         Assert.notNull(String, "String cannot be null");
         context.set(String);
     }
 
-    public static String getString() {
+    public static String getLookUp() {
         return context.get();
     }
 
-    public static void clear() {
+    public static void clearLookUp() {
         context.remove();
     }
 

@@ -27,6 +27,16 @@ public class V1__Initial_public_creation extends BaseJavaMigration {
                                 + "role VARCHAR(255), "
                                 + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
                                 + ");";
+                String createDatasourceTable = "CREATE TABLE public.datasource ("
+                                + "id SERIAL PRIMARY KEY, "
+                                + "username VARCHAR(255) UNIQUE NOT NULL, "
+                                + "password VARCHAR(255) NOT NULL, "
+                                + "schema_name VARCHAR(255), "
+                                + "role VARCHAR(255), "
+                                + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+                                + ");";
+                String insertRootDatasource = "INSERT INTO public.datasource (password, schema_name, username, role) VALUES ('"
+                                + adminPassword + "', 'public', 'global_admin', 'global_admin')";
 
                 String insertSchemaName = "INSERT INTO public.schema_mapping_table (uuid_name, created_at, schema_name) VALUES ('public', NOW(), 'public')";
                 String insertRootUser = "INSERT INTO public.user (password, schema_name, username, role) VALUES ('"
@@ -52,6 +62,8 @@ public class V1__Initial_public_creation extends BaseJavaMigration {
                         stmt.execute(insertSchemaName);
                         stmt.execute(insertRootUser);
                         stmt.execute(getAllSchema);
+                        stmt.execute(createDatasourceTable);
+                        stmt.execute(insertRootDatasource);
                         System.out.println("Public Migration Applied successfully.");
 
                 } catch (Exception e) {

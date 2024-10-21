@@ -55,7 +55,7 @@ public class AuthController {
 
         // Create Database user
         try {
-            dbUserRegistrationService.registerDbUser(user);
+            dbUserRegistrationService.registerAdminDbUser(user);
         } catch (SQLException e) {
             return ResponseEntity.ok(e.getMessage() + "Somthing Wrong!");
         }

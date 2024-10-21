@@ -80,7 +80,7 @@ public class UserController {
 
         // Create Database user
         try {
-            dbUserRegistrationService.registerDbUser(user);
+            dbUserRegistrationService.registerAdminDbUser(user);
         } catch (SQLException e) {
             return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 
@@ -88,8 +88,8 @@ public class UserController {
 
         // // Add Database user details in public schema user table
         try {
-            UserContextHolder.set("public");
-            System.out.println(UserContextHolder.getString());
+            UserContextHolder.setLookUp("public");
+            System.out.println(UserContextHolder.getLookUp());
             userService.registerNewUser(user);
         } catch (Exception e) {
             return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

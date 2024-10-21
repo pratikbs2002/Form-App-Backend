@@ -10,11 +10,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.argusoft.form.entity.DataSourceEntity;
 import com.argusoft.form.entity.User;
 import com.argusoft.form.repository.UserRepository;
 import com.argusoft.form.security.datasource_config.DataSourceManager;
 import com.argusoft.form.security.datasource_config.DynamicDataSource;
 import com.argusoft.form.security.datasource_config.UserContextHolder;
+import com.argusoft.form.service.DatasourceService;
 import com.argusoft.form.service.SchemaMappingService;
 
 import jakarta.servlet.FilterChain;
@@ -40,6 +42,9 @@ public class DynamicConnectionFilter extends OncePerRequestFilter {
     @Autowired
     private SchemaMappingService schemaMappingService;
 
+    @Autowired
+    private DatasourceService datasourceService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -64,11 +69,14 @@ public class DynamicConnectionFilter extends OncePerRequestFilter {
                             String currentSchema = schemaMappingService.findSchemaByUUIDName(user.getSchemaName()).get()
                                     .getSchemaName();
 
-                            UserContextHolder.set(username);
+                            DataSourceEntity dataSourceEntity = datasourceService.getDataSourceDetails(user.getRole());
+
+                            UserContextHolder.setLookUp(dataSourceEntity.getUsername());
                             UserContextHolder.setSchema(currentSchema);
 
-                            dataSourceManager.getDataSource(user.getSchemaName(), user.getUsername(),
-                                    user.getPassword());
+                            dataSourceManager.getDataSource(dataSourceEntity.getSchemaName(),
+                                    dataSourceEntity.getUsername(),
+                                    dataSourceEntity.getPassword());
 
                             System.out.println(
                                     "\nIn Filterchain All Datasource: " + dynamicDataSource.getResolvedDataSources()
@@ -86,7 +94,7 @@ public class DynamicConnectionFilter extends OncePerRequestFilter {
                 }
             }
         } finally {
-            UserContextHolder.clear();
+            UserContextHolder.clearLookUp();
         }
     }
 }
