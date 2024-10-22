@@ -69,7 +69,8 @@ public class DynamicConnectionFilter extends OncePerRequestFilter {
                             String currentSchema = schemaMappingService.findSchemaByUUIDName(user.getSchemaName()).get()
                                     .getSchemaName();
 
-                            DataSourceEntity dataSourceEntity = datasourceService.getDataSourceDetails(user.getRole());
+                            DataSourceEntity dataSourceEntity = datasourceService.getDataSourceDetails(user.getRole(),
+                                    user.getSchemaName());
 
                             UserContextHolder.setLookUp(dataSourceEntity.getUsername());
                             UserContextHolder.setSchema(currentSchema);

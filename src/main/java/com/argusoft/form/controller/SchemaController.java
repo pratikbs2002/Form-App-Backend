@@ -24,9 +24,12 @@ import com.argusoft.form.entity.DataSourceEntity;
 import com.argusoft.form.entity.Schema;
 import com.argusoft.form.entity.User;
 import com.argusoft.form.service.CreateAndMigrateService;
+import com.argusoft.form.service.DatasourceService;
 import com.argusoft.form.service.DbUserRegistrationService;
 import com.argusoft.form.service.SchemaMappingService;
 import com.argusoft.form.service.UserService;
+
+import jakarta.transaction.Transactional;
 
 @RestController
 @RequestMapping("/api/schema")
@@ -44,6 +47,9 @@ public class SchemaController {
     private DbUserRegistrationService dbUserRegistrationService;
 
     @Autowired
+    private DatasourceService datasourceService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public SchemaController(CreateAndMigrateService createAndMigrateService, SchemaMappingService schemaMappingService,
@@ -54,6 +60,7 @@ public class SchemaController {
     }
 
     @GetMapping("/mg/{schemaName}")
+    @Transactional
     public ResponseEntity<?> createAndMigrate(@PathVariable String schemaName) {
         try {
             // To generate schema uuid ........
@@ -98,9 +105,6 @@ public class SchemaController {
                 return ResponseEntity.ok(e.getMessage() + "Somthing Wrong!");
             }
 
-            // Add Database Admin user details in public schema user table
-            userService.registerNewUser(adminUser);
-
             User reportingUser = new User();
             reportingUser.setUsername(schemaId + "_" + schemaName + "_reporting_user");
             reportingUser.setSchemaName(schemaId);
@@ -114,12 +118,34 @@ public class SchemaController {
                 return ResponseEntity.ok(e.getMessage() + "Somthing Wrong!");
             }
 
-            // Add Database Reporting user details in public schema user table
-            userService.registerNewUser(reportingUser);
+            // To add admin role datasource into datasource table
+            DataSourceEntity adminDatasource = new DataSourceEntity();
+            adminDatasource.setSchemaName(schemaId);
+            adminDatasource.setUsername(adminUser.getUsername());
+            adminDatasource.setPassword(adminUser.getPassword());
+            adminDatasource.setRole(adminUser.getRole());
 
-            // DataSourceEntity adminDatasource = new DataSourceEntity();
-            // adminDatasource.setSchemaName(schemaId);
-            // adminDatasource.setUsername();
+            datasourceService.addUserDataSource(adminDatasource);
+
+            System.out.println(adminDatasource);
+
+            // To add reporting role datasource into datasource table
+            DataSourceEntity reportingUserDatasource = new DataSourceEntity();
+            reportingUserDatasource.setSchemaName(schemaId);
+            reportingUserDatasource.setUsername(reportingUser.getUsername());
+            reportingUserDatasource.setPassword(reportingUser.getPassword());
+            reportingUserDatasource.setRole(reportingUser.getRole());
+
+            System.out.println(reportingUserDatasource);
+            datasourceService.addUserDataSource(reportingUserDatasource);
+
+            // Add Database Admin user details in public schema user table
+            adminUser.setUsername("default_" + schemaName + "_admin");
+            userService.registerNewUser(adminUser);
+
+            // Add Database Reporting user details in public schema user table
+            reportingUser.setUsername("default_" + schemaName + "_reporting_user");
+            userService.registerNewUser(reportingUser);
 
             Map<String, Object> mp = new HashMap<>();
             mp.put("User", reportingUser);
