@@ -73,9 +73,9 @@ public class UserController {
 
         User user = new User();
         user.setSchemaName(schemaUUID);
-        user.setUsername(userData.get("username") + "_" + UserContextHolder.getSchema() + "_admin");
+        user.setUsername(userData.get("username") + "_" + UserContextHolder.getSchema() + "_" + userData.get("role"));
         user.setPassword(passwordEncoder.encode(userData.get("password")));
-        user.setRole("admin");
+        user.setRole(userData.get("role"));
         System.out.println(user);
 
         // Create Database user
