@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+import org.springframework.data.domain.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.http.HttpStatus;
@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.argusoft.form.dto.FormDTO;
+import com.argusoft.form.dto.FormResponseDTO;
 import com.argusoft.form.dto.QuestionDTO;
 import com.argusoft.form.entity.CreateForm;
 import com.argusoft.form.service.CreateFormService;
@@ -40,11 +42,22 @@ public class CreateFormController {
     private ObjectMapper objectMapper;
 
     @GetMapping("/all")
-    public ResponseEntity<List<FormDTO>> getAllForms() {
+    public ResponseEntity<FormResponseDTO> getAllForms(
+            @RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize,
+            @RequestParam(value= "sortBy", defaultValue = "id", required = false) String sortBy,
+            @RequestParam(value= "sortDir", defaultValue = "asc", required = false) String sortDir) {
 
-        List<FormDTO> formDTOs = new ArrayList<>();
-        List<CreateForm> allForms = createFormService.findAll();
-        for (CreateForm createForm : allForms) {
+        Page<CreateForm> pageForm = createFormService.findAll(pageNumber, pageSize, sortBy, sortDir);
+
+        FormResponseDTO formResponseDTO = new FormResponseDTO();
+        formResponseDTO.setPageNumber(pageForm.getNumber());
+        formResponseDTO.setPageSize(pageForm.getSize());
+        formResponseDTO.setTotalElements(pageForm.getTotalElements());
+        formResponseDTO.setTotalPages(pageForm.getTotalPages());
+        formResponseDTO.setLastPage(pageForm.isLast());
+
+        for (CreateForm createForm : pageForm.getContent()) {
             FormDTO formDTO = new FormDTO();
 
             try {
@@ -55,7 +68,7 @@ public class CreateFormController {
                 formDTO.setAdminId(createForm.getAdminId());
                 formDTO.setCreatedAt(createForm.getCreatedAt());
                 formDTO.setQuestions(questions);
-                formDTOs.add(formDTO);
+                formResponseDTO.addContent(formDTO);
 
             } catch (JsonMappingException e) {
                 e.printStackTrace();
@@ -64,7 +77,7 @@ public class CreateFormController {
             }
         }
 
-        return ResponseEntity.ok(formDTOs);
+        return ResponseEntity.ok(formResponseDTO);
 
         // return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
