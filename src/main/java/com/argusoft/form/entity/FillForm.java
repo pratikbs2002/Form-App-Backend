@@ -3,7 +3,7 @@ package com.argusoft.form.entity;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,8 +27,12 @@ public class FillForm {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Embedded
-    private LocationType location;
+    // @Embedded
+    // private LocationType location;
+
+    @Column(columnDefinition = "point")
+    @Convert(converter = LocationPointConverter.class)
+    private String location;
 
     @Column(name = "loaction_id", nullable = false)
     private Integer locationId;
@@ -36,7 +40,7 @@ public class FillForm {
     public FillForm() {
     }
 
-    public FillForm(Long id, Long formId, Long userId, String answers, LocalDateTime createdAt, LocationType location,
+    public FillForm(Long id, Long formId, Long userId, String answers, LocalDateTime createdAt, String location,
             Integer locationId) {
         this.id = id;
         this.formId = formId;
@@ -87,11 +91,11 @@ public class FillForm {
         this.createdAt = createdAt;
     }
 
-    public LocationType getLocation() {
+    public String getLocation() {
         return location;
     }
 
-    public void setLocation(LocationType location) {
+    public void setLocation(String location) {
         this.location = location;
     }
 

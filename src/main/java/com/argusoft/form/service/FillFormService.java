@@ -1,5 +1,6 @@
 package com.argusoft.form.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,9 @@ public class FillFormService {
   public void save(FillForm fillForm) {
     System.out.println("inside-------------------");
     System.out.println(fillForm);
+    // LocationPoint location = new LocationPoint();
     fillFormRepository.insertFillForm(fillForm.getFormId(), fillForm.getUserId(), fillForm.getAnswers(),
-        fillForm.getCreatedAt(), fillForm.getLocation().getLat(),fillForm.getLocation().getLng(), fillForm.getLocationId());
+        fillForm.getCreatedAt(), fillForm.getLocation(), fillForm.getLocationId());
   }
 
   public void deleteById(Long id) {
@@ -30,7 +32,11 @@ public class FillFormService {
         fillForm.getCreatedAt(), fillForm.getLocation(), fillForm.getLocationId());
   }
 
-  public Optional<FillForm> findById(Long id){
-    return fillFormRepository.findById(id);
+  public Optional<List<FillForm>> findById(Long id){
+    return fillFormRepository.getFillFormById(id);
+  }
+
+  public List<FillForm> findAll(){
+    return fillFormRepository.findAll();
   }
 }
