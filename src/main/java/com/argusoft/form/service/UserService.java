@@ -31,4 +31,8 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    public List<User> getUsersBySchema(String schema) {
+        return userRepository.findBySchemaName(schema);
+    }
 }

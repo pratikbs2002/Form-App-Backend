@@ -61,6 +61,15 @@ public class UserController {
         }
     }
 
+    @GetMapping("/all/{schemaName}")
+    public ResponseEntity<?> getAllUser(@PathVariable String schemaName) {
+        try {
+            return new ResponseEntity<>(userService.getUsersBySchema(schemaName), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PostMapping("/add/admin")
     public ResponseEntity<?> addAdminUser(@RequestBody Map<String, String> userData) {
         String schemaUUID;
