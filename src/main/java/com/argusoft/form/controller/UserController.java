@@ -7,6 +7,9 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.argusoft.form.entity.User;
@@ -62,11 +66,18 @@ public class UserController {
     }
 
     @GetMapping("/all/{schemaName}")
-    public ResponseEntity<?> getAllUser(@PathVariable String schemaName) {
+    public ResponseEntity<?> getAllUserBySchemaName(
+            @PathVariable String schemaName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String role) {
         try {
-            return new ResponseEntity<>(userService.getUsersBySchema(schemaName), HttpStatus.OK);
+            Pageable pageable = PageRequest.of(page, size);
+            return new ResponseEntity<>(userService.getAllUsersBySchema(schemaName, role, pageable), HttpStatus.OK);
+        } catch (DataAccessException e) {
+            return new ResponseEntity<>("Permission Denied", HttpStatus.FORBIDDEN);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("An error occurred", HttpStatus.BAD_REQUEST);
         }
     }
 

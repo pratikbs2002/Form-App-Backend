@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.argusoft.form.entity.User;
@@ -32,7 +34,13 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public List<User> getUsersBySchema(String schema) {
-        return userRepository.findBySchemaName(schema);
+    public Page<List<User>> getAllUsersBySchema(String schema, String role,
+            org.springframework.data.domain.Pageable pageable) {
+
+        if (role != null && !role.isEmpty() && !role.equals("null")) {
+            return userRepository.findBySchemaNameAndRole(schema, role, pageable);
+        } else {
+            return userRepository.findAllBySchemaName(schema, pageable);
+        }
     }
 }

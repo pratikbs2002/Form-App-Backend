@@ -54,6 +54,13 @@ public class DbUserRegistrationService {
                                 + " GRANT ALL PRIVILEGES ON FUNCTIONS TO "
                                 + user.getUsername() + " WITH GRANT OPTION";
 
+                // Grant Public Schema to admin role
+                String grantPublicSchemaToAdminRole = "GRANT USAGE ON SCHEMA public TO " + user.getUsername();
+
+                // Grant Public Schema User Table to admin role
+                String grantPublicUserTableToAdminRole = "GRANT SELECT, INSERT, UPDATE ON public.user TO "
+                                + user.getUsername();
+
                 // Create connection using datasource to execute above queries
                 try (Connection connection = dataSource.getConnection();
                                 Statement stmt = connection.createStatement()) {
@@ -66,13 +73,14 @@ public class DbUserRegistrationService {
                         stmt.executeUpdate(setDefaultSequencePrivilegesQuery);
                         stmt.executeUpdate(grantFuntionPrivilegesQuery);
                         stmt.executeUpdate(setDefaultFunctionPrivilegesQuery);
+                        stmt.executeUpdate(grantPublicSchemaToAdminRole);
+                        stmt.executeUpdate(grantPublicUserTableToAdminRole);
 
                 } catch (SQLException e) {
                         throw e;
                 }
                 return "Database User created Successfully";
         }
-
 
         public String registerReportingDbUser(User user) throws SQLException {
                 // Query to create a new database user
@@ -81,35 +89,34 @@ public class DbUserRegistrationService {
 
                 // Query to Grant Usage of schema to the database user
                 String grantSchemaUsageQuery = "GRANT USAGE ON SCHEMA " + user.getSchemaName() + " TO "
-                                + user.getUsername()
-                                + " WITH GRANT OPTION";
+                                + user.getUsername();
 
                 // Query to Grant privileges on existing tables to created user
                 String grantTablePrivilegesQuery = "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA "
-                                + user.getSchemaName() + " TO " + user.getUsername() + " WITH GRANT OPTION";
+                                + user.getSchemaName() + " TO " + user.getUsername();
 
                 // Query to grant default privileges for future tables
                 String setDefaultTablePrivilegesQuery = "ALTER DEFAULT PRIVILEGES IN SCHEMA " + user.getSchemaName()
                                 + " GRANT ALL PRIVILEGES ON TABLES TO "
-                                + user.getUsername() + " WITH GRANT OPTION";
+                                + user.getUsername();
 
                 // Query to Grant privileges on existing sequences to created user
                 String grantSequencePrivilegesQuery = "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA "
-                                + user.getSchemaName() + " TO " + user.getUsername() + " WITH GRANT OPTION";
+                                + user.getSchemaName() + " TO " + user.getUsername();
 
                 // Query to grant default privileges for future sequences
                 String setDefaultSequencePrivilegesQuery = "ALTER DEFAULT PRIVILEGES IN SCHEMA " + user.getSchemaName()
                                 + " GRANT ALL PRIVILEGES ON SEQUENCES TO "
-                                + user.getUsername() + " WITH GRANT OPTION";
+                                + user.getUsername();
 
                 // Query to Grant privileges on existing functions to created user
                 String grantFuntionPrivilegesQuery = "GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA "
-                                + user.getSchemaName() + " TO " + user.getUsername() + " WITH GRANT OPTION";
+                                + user.getSchemaName() + " TO " + user.getUsername();
 
                 // Query to grant default privileges for future functions
                 String setDefaultFunctionPrivilegesQuery = "ALTER DEFAULT PRIVILEGES IN SCHEMA " + user.getSchemaName()
                                 + " GRANT ALL PRIVILEGES ON FUNCTIONS TO "
-                                + user.getUsername() + " WITH GRANT OPTION";
+                                + user.getUsername();
 
                 // Create connection using datasource to execute above queries
                 try (Connection connection = dataSource.getConnection();
@@ -129,5 +136,4 @@ public class DbUserRegistrationService {
                 }
                 return "Database User created Successfully";
         }
-
 }
