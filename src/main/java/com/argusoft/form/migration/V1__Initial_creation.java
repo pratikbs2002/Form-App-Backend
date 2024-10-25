@@ -41,6 +41,7 @@ public class V1__Initial_creation extends BaseJavaMigration {
 
                 String createCreateFormTableSQL = "CREATE TABLE IF NOT EXISTS " + schema + ".create_form ("
                                 + "id SERIAL PRIMARY KEY, "
+                                + "title VARCHAR(255), "
                                 + "admin_id INT NOT NULL, "
                                 + "questions JSONB, "
                                 + "created_at TIMESTAMP DEFAULT NOW(), "
@@ -56,8 +57,10 @@ public class V1__Initial_creation extends BaseJavaMigration {
                 String createLocType = "CREATE TYPE " + schema + ".loc AS (lat float, long float)";
 
                 String createFillFormTableSQL = "CREATE TABLE IF NOT EXISTS " + schema + ".fill_form ("
+                                + "id SERIAL PRIMARY KEY, "
                                 + "form_id INT NOT NULL, "
                                 + "user_id INT NOT NULL, "
+                                + "title VARCHAR(255), "
                                 + "answers JSONB, "
                                 + "created_at TIMESTAMP DEFAULT NOW(), "
                                 + "location loc NOT NULL, "
