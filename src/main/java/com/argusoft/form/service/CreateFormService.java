@@ -46,7 +46,7 @@ public class CreateFormService {
     }
 
     public void save(CreateForm createForm) {
-        createFormRepository.insertCreateForm(createForm.getAdminId(), createForm.getCreatedAt(),
+        createFormRepository.insertCreateForm(createForm.getTitle(), createForm.getAdminId(), createForm.getCreatedAt(),
                 createForm.getQuestions());
     }
 
@@ -55,7 +55,8 @@ public class CreateFormService {
     }
 
     public void updateForm(CreateForm createForm) {
-        createFormRepository.updateCreateForm(createForm.getId(), createForm.getAdminId(), createForm.getCreatedAt(),
+        createFormRepository.updateCreateForm(createForm.getId(), createForm.getTitle(), createForm.getAdminId(),
+                createForm.getCreatedAt(),
                 createForm.getQuestions());
     }
 }

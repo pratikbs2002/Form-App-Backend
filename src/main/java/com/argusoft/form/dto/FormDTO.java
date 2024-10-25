@@ -6,6 +6,8 @@ import java.util.List;
 public class FormDTO {
     private Long id;
 
+    private String title;
+
     private Long adminId;
 
     private List<QuestionDTO> questions;
@@ -22,6 +24,8 @@ public class FormDTO {
     public void setId(Long id) {
         this.id = id;
     }
+
+    
 
     public Long getAdminId() {
         return adminId;
@@ -45,6 +49,14 @@ public class FormDTO {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
 }
