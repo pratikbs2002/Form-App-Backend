@@ -65,6 +65,7 @@ public class CreateFormController {
                         new TypeReference<List<QuestionDTO>>() {
                         });
                 formDTO.setId(createForm.getId());
+                formDTO.setTitle(createForm.getTitle());
                 formDTO.setAdminId(createForm.getAdminId());
                 formDTO.setCreatedAt(createForm.getCreatedAt());
                 formDTO.setQuestions(questions);
@@ -94,6 +95,7 @@ public class CreateFormController {
                         new TypeReference<List<QuestionDTO>>() {
                         });
                 formDTO.setId(id);
+                formDTO.setTitle(createForm.get().getTitle());
                 formDTO.setAdminId(createForm.get().getAdminId());
                 formDTO.setCreatedAt(createForm.get().getCreatedAt());
                 formDTO.setQuestions(questions);
@@ -119,6 +121,10 @@ public class CreateFormController {
         }
         if (createForm.containsKey("id")) {
             savedForm.setId(Long.parseLong(createForm.get("id").toString()));
+        }
+
+        if (createForm.containsKey("title")) {
+            savedForm.setTitle(createForm.get("title").toString());
         }
 
         try {
@@ -153,6 +159,9 @@ public class CreateFormController {
             }
             if (createForm.containsKey("id")) {
                 savedForm.setId(Long.parseLong(createForm.get("id").toString()));
+            }
+            if (createForm.containsKey("title")) {
+                savedForm.setTitle(createForm.get("title").toString());
             }
 
             try {

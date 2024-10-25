@@ -2,29 +2,29 @@ package com.argusoft.form.dto;
 
 public class AnswerDTO {
   private String answer_id;
-  private String answer;
+  private Object answer;
 
   public AnswerDTO() {
   }
 
-  public AnswerDTO(String answer_id, String answer) {
+  public AnswerDTO(String answer_id, Object answer) {
     this.answer_id = answer_id;
     this.answer = answer;
   }
 
   public String getAnswer_id() {
-    return answer_id;
+    return answer_id; 
   }
 
   public void setAnswer_id(String answer_id) {
     this.answer_id = answer_id;
   }
 
-  public String getAnswer() {
+  public Object getAnswer() {
     return answer;
   }
 
-  public void setAnswer(String answer) {
+  public void setAnswer(Object answer) {
     this.answer = answer;
   }
 

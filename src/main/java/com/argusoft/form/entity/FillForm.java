@@ -30,17 +30,17 @@ public class FillForm {
     // @Embedded
     // private LocationType location;
 
-    @Column(columnDefinition = "point")
+    @Column(columnDefinition = "loc")
     @Convert(converter = LocationPointConverter.class)
-    private String location;
+    private LocationPoint location;
 
-    @Column(name = "loaction_id", nullable = false)
+    @Column(name = "location_id", nullable = false)
     private Integer locationId;
 
     public FillForm() {
     }
 
-    public FillForm(Long id, Long formId, Long userId, String answers, LocalDateTime createdAt, String location,
+    public FillForm(Long id, Long formId, Long userId, String answers, LocalDateTime createdAt, LocationPoint location,
             Integer locationId) {
         this.id = id;
         this.formId = formId;
@@ -91,11 +91,11 @@ public class FillForm {
         this.createdAt = createdAt;
     }
 
-    public String getLocation() {
+    public LocationPoint getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(LocationPoint location) {
         this.location = location;
     }
 
