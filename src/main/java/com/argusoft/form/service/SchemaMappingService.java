@@ -3,6 +3,8 @@ package com.argusoft.form.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.argusoft.form.entity.Schema;
@@ -23,6 +25,10 @@ public class SchemaMappingService {
 
     public List<Schema> findAllSchema() {
         return schemaMappingRepo.findAll();
+    }
+
+    public Page<List<Schema>> findPageableAllSchema(Pageable pageable) {
+        return schemaMappingRepo.findPageableAll(pageable);
     }
 
     public List<Schema> findSchemaBySchemaName(String schema_name) {

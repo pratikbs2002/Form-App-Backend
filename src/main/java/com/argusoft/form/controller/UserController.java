@@ -2,12 +2,14 @@ package com.argusoft.form.controller;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -57,7 +59,6 @@ public class UserController {
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllUser() {
-        System.out.println(userService.getAllUsers().toString());
         try {
             return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
         } catch (Exception e) {
@@ -72,12 +73,45 @@ public class UserController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String role) {
         try {
+            if (schemaName.isEmpty()) {
+                return ResponseEntity.badRequest().body("Schema name must not be empty");
+            }
+
             Pageable pageable = PageRequest.of(page, size);
-            return new ResponseEntity<>(userService.getAllUsersBySchema(schemaName, role, pageable), HttpStatus.OK);
+            Page<List<User>> users = userService.getAllUsersBySchema(schemaName, role, pageable);
+
+            if (users.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+
+            return ResponseEntity.ok(users);
+
         } catch (DataAccessException e) {
-            return new ResponseEntity<>("Permission Denied", HttpStatus.FORBIDDEN);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Permission Denied");
         } catch (Exception e) {
-            return new ResponseEntity<>("An error occurred", HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/all/root")
+    public ResponseEntity<?> getAllUsersForRoot(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String role) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<List<User>> users = userService.getAllUsersForRoot(role, pageable);
+
+            if (users.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+
+            return ResponseEntity.ok(users);
+
+        } catch (DataAccessException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Permission Denied");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred: " + e.getMessage());
         }
     }
 
