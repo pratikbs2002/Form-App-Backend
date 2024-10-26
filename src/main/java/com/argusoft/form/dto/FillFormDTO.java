@@ -14,13 +14,13 @@ public class FillFormDTO {
   private List<AnswerDTO> answers = new ArrayList<>();
   private LocalDateTime createdAt;
   private LocationPoint location;
-  private Integer locationId;
+  private Long locationId;
 
   public FillFormDTO() {
   }
 
   public FillFormDTO(Long id, String title, Long formId, Long userId, List<AnswerDTO> answers, LocalDateTime createdAt,
-      LocationPoint location, Integer locationId) {
+      LocationPoint location, Long locationId) {
     this.id = id;
     this.title = title;
     this.formId = formId;
@@ -39,7 +39,6 @@ public class FillFormDTO {
     this.id = id;
   }
 
-  
   public Long getFormId() {
     return formId;
   }
@@ -80,11 +79,11 @@ public class FillFormDTO {
     this.location = location;
   }
 
-  public Integer getLocationId() {
+  public Long getLocationId() {
     return locationId;
   }
 
-  public void setLocationId(Integer locationId) {
+  public void setLocationId(Long locationId) {
     this.locationId = locationId;
   }
 

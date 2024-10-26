@@ -19,26 +19,9 @@ public class CreateFormService {
     private CreateFormRepository createFormRepository;
 
     public Page<CreateForm> findAll(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
-
-        // int pageSize = 5;
-        // int pageNumber = 0;
         Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-
         Pageable p = PageRequest.of(pageNumber, pageSize, sort);
-
         return this.createFormRepository.findAll(p);
-
-        // Page<CreateForm> pageForm =
-        // return this.createFormRepository.findAll(p);
-        // FormResponseDTO formResponse = new FormResponseDTO();
-        // formResponse.setContent(pageForm.getContent());
-        // formResponse.setPageNumber(pageForm.getNumber());
-        // formResponse.setPageSize(pageForm.getSize());
-        // formResponse.setTotalElements(pageForm.getTotalElements());
-        // formResponse.setTotalPages(pageForm.getTotalPages());
-        // formResponse.setLastPage(pageForm.isLast());
-        // return formResponse;
-        // return createFormRepository.findAll();
     }
 
     public Optional<CreateForm> findById(Long id) {
@@ -46,7 +29,8 @@ public class CreateFormService {
     }
 
     public void save(CreateForm createForm) {
-        createFormRepository.insertCreateForm(createForm.getTitle(), createForm.getAdminId(), createForm.getCreatedAt(),
+        createFormRepository.insertCreateForm(createForm.getTitle(), createForm.getAdmin().getId(),
+                createForm.getCreatedAt(),
                 createForm.getQuestions());
     }
 
@@ -55,7 +39,7 @@ public class CreateFormService {
     }
 
     public void updateForm(CreateForm createForm) {
-        createFormRepository.updateCreateForm(createForm.getId(), createForm.getTitle(), createForm.getAdminId(),
+        createFormRepository.updateCreateForm(createForm.getId(), createForm.getTitle(), createForm.getAdmin().getId(),
                 createForm.getCreatedAt(),
                 createForm.getQuestions());
     }

@@ -26,9 +26,13 @@ import com.argusoft.form.dto.FillFormDTO;
 import com.argusoft.form.dto.FillFormResponseDTO;
 import com.argusoft.form.entity.CreateForm;
 import com.argusoft.form.entity.FillForm;
+import com.argusoft.form.entity.Location;
 import com.argusoft.form.entity.LocationPoint;
+import com.argusoft.form.entity.UserInfo;
 import com.argusoft.form.service.CreateFormService;
 import com.argusoft.form.service.FillFormService;
+import com.argusoft.form.service.LocationService;
+import com.argusoft.form.service.UserInfoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,24 +50,53 @@ public class FillFormController {
   @Autowired
   private CreateFormService createFormService;
 
+  @Autowired
+  private UserInfoService userInfoService;
+
+  @Autowired
+  private LocationService locationService;
+
   @PostMapping("/add")
   public ResponseEntity<String> submittedForm(@RequestBody Map<String, Object> fillForm) {
     System.out.println(fillForm);
 
     FillForm submittedForm = new FillForm();
-    // submittedForm.setFormId();
     if (fillForm.containsKey("formId")) {
-      submittedForm.setFormId(Long.valueOf(fillForm.get("formId").toString()));
+      Long formId = Long.parseLong(fillForm.get("formId").toString());
+      Optional<CreateForm> formOptional = createFormService.findById(formId);
+      if (formOptional.isPresent()) {
+        submittedForm.setForm(formOptional.get());
+      } else {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body("Form not found");
+      }
     }
+
     if (fillForm.containsKey("userId")) {
-      submittedForm.setUserId(Long.valueOf(fillForm.get("userId").toString()));
+      Long userId = Long.parseLong(fillForm.get("userId").toString());
+      Optional<UserInfo> userOptional = userInfoService.getUserById(userId);
+      if (userOptional.isPresent()) {
+        submittedForm.setUserInfo(userOptional.get());
+      } else {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body("User not found");
+      }
     }
+
     if (fillForm.containsKey("locationId")) {
-      submittedForm.setLocationId(Integer.parseInt(fillForm.get("locationId").toString()));
+      Long locationId = Long.parseLong(fillForm.get("locationId").toString());
+
+      Optional<Location> location = locationService.findLocationById(locationId);
+      if (location.isPresent()) {
+        submittedForm.setLocation(location.get());
+      } else {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body("Location not found");
+      }
     }
     LocationPoint locationPoint = new LocationPoint(20.202020, 20.202020);
 
-    submittedForm.setLocation(locationPoint);
+    submittedForm.setLocationPoint(locationPoint);
 
     try {
       String answersJson = objectMapper.writeValueAsString(fillForm.get("answers"));
@@ -86,10 +119,10 @@ public class FillFormController {
 
     if (fillForm != null) {
       fillFormDTO.setId(fillForm.getId());
-      fillFormDTO.setFormId(fillForm.getFormId());
-      fillFormDTO.setUserId(fillForm.getUserId());
-      fillFormDTO.setLocationId(fillForm.getLocationId());
-      fillFormDTO.setLocation(fillForm.getLocation());
+      fillFormDTO.setFormId(fillForm.getForm().getId());
+      fillFormDTO.setUserId(fillForm.getUserInfo().getId());
+      fillFormDTO.setLocationId(fillForm.getLocation().getId());
+      fillFormDTO.setLocation(fillForm.getLocationPoint());
       fillFormDTO.setCreatedAt(fillForm.getCreatedAt());
       try {
         List<AnswerDTO> answersList = objectMapper.readValue(fillForm.getAnswers(),
@@ -124,8 +157,8 @@ public class FillFormController {
 
       List<FillForm> sortedContent = pageFillForm.getContent().stream()
           .sorted((f1, f2) -> {
-            Optional<CreateForm> createForm1 = createFormService.findById(f1.getFormId());
-            Optional<CreateForm> createForm2 = createFormService.findById(f2.getFormId());
+            Optional<CreateForm> createForm1 = createFormService.findById(f1.getForm().getId());
+            Optional<CreateForm> createForm2 = createFormService.findById(f2.getForm().getId());
             String title1 = createForm1.isPresent() ? createForm1.get().getTitle() : "undefined";
             String title2 = createForm2.isPresent() ? createForm2.get().getTitle() : "undefined";
             return "asc".equalsIgnoreCase(sortDir)
@@ -149,14 +182,14 @@ public class FillFormController {
 
     for (FillForm fillForm : pageFillForm.getContent()) {
       FillFormDTO fillFormDTO = new FillFormDTO();
-      String title = createFormService.findById(fillForm.getFormId()).get().getTitle();
+      String title = createFormService.findById(fillForm.getForm().getId()).get().getTitle();
 
       fillFormDTO.setTitle(title);
-      fillFormDTO.setFormId(fillForm.getFormId());
-      fillFormDTO.setUserId(fillForm.getUserId());
+      fillFormDTO.setFormId(fillForm.getForm().getId());
+      fillFormDTO.setUserId(fillForm.getUserInfo().getId());
       fillFormDTO.setId(fillForm.getId());
-      fillFormDTO.setLocationId(fillForm.getLocationId());
-      fillFormDTO.setLocation(fillForm.getLocation());
+      fillFormDTO.setLocationId(fillForm.getLocation().getId());
+      fillFormDTO.setLocation(fillForm.getLocationPoint());
       fillFormDTO.setCreatedAt(fillForm.getCreatedAt());
       try {
         List<AnswerDTO> answersList = objectMapper.readValue(fillForm.getAnswers(),

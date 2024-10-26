@@ -1,37 +1,56 @@
 package com.argusoft.form.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "address")
 public class Address {
-    private int id;
-    private String add_line;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "add_line", nullable = false, length = 255)
+    private String addressLine;
+
+    @Column(name = "city", nullable = false, length = 100)
     private String city;
+
+    @Column(name = "state", length = 100)
     private String state;
-    private int pincode;
+
+    @Column(name = "pincode", nullable = false)
+    private Integer pincode;
 
     public Address() {
     }
 
-    public Address(int id, String add_line, String city, String state, int pincode) {
+    public Address(Long id, String addressLine, String city, String state, Integer pincode) {
         this.id = id;
-        this.add_line = add_line;
+        this.addressLine = addressLine;
         this.city = city;
         this.state = state;
         this.pincode = pincode;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getAdd_line() {
-        return add_line;
+    public String getAddressLine() {
+        return addressLine;
     }
 
-    public void setAdd_line(String add_line) {
-        this.add_line = add_line;
+    public void setAddressLine(String addressLine) {
+        this.addressLine = addressLine;
     }
 
     public String getCity() {
@@ -50,12 +69,18 @@ public class Address {
         this.state = state;
     }
 
-    public int getPincode() {
+    public Integer getPincode() {
         return pincode;
     }
 
-    public void setPincode(int pincode) {
+    public void setPincode(Integer pincode) {
         this.pincode = pincode;
+    }
+
+    @Override
+    public String toString() {
+        return "Address [id=" + id + ", addressLine=" + addressLine + ", city=" + city + ", state=" + state
+                + ", pincode=" + pincode + "]";
     }
 
 }

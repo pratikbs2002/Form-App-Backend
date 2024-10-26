@@ -25,7 +25,9 @@ import com.argusoft.form.dto.FormDTO;
 import com.argusoft.form.dto.FormResponseDTO;
 import com.argusoft.form.dto.QuestionDTO;
 import com.argusoft.form.entity.CreateForm;
+import com.argusoft.form.entity.UserInfo;
 import com.argusoft.form.service.CreateFormService;
+import com.argusoft.form.service.UserInfoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -41,12 +43,15 @@ public class CreateFormController {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private UserInfoService userInfoService;
+
     @GetMapping("/all")
     public ResponseEntity<FormResponseDTO> getAllForms(
             @RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize,
-            @RequestParam(value= "sortBy", defaultValue = "id", required = false) String sortBy,
-            @RequestParam(value= "sortDir", defaultValue = "asc", required = false) String sortDir) {
+            @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir) {
 
         Page<CreateForm> pageForm = createFormService.findAll(pageNumber, pageSize, sortBy, sortDir);
 
@@ -66,7 +71,7 @@ public class CreateFormController {
                         });
                 formDTO.setId(createForm.getId());
                 formDTO.setTitle(createForm.getTitle());
-                formDTO.setAdminId(createForm.getAdminId());
+                formDTO.setAdminId(createForm.getAdmin().getId());
                 formDTO.setCreatedAt(createForm.getCreatedAt());
                 formDTO.setQuestions(questions);
                 formResponseDTO.addContent(formDTO);
@@ -96,7 +101,7 @@ public class CreateFormController {
                         });
                 formDTO.setId(id);
                 formDTO.setTitle(createForm.get().getTitle());
-                formDTO.setAdminId(createForm.get().getAdminId());
+                formDTO.setAdminId(createForm.get().getAdmin().getId());
                 formDTO.setCreatedAt(createForm.get().getCreatedAt());
                 formDTO.setQuestions(questions);
 
@@ -114,13 +119,18 @@ public class CreateFormController {
     @PostMapping("/add")
     public ResponseEntity<String> createdddForm(@RequestBody Map<String, Object> createForm) {
         System.out.println(createForm);
+
         CreateForm savedForm = new CreateForm();
-        // System.out.println("+++++++++++++++++++++++"+createForm.get("questions"));
+
         if (createForm.containsKey("adminId")) {
-            savedForm.setAdminId(Long.parseLong(createForm.get("adminId").toString()));
-        }
-        if (createForm.containsKey("id")) {
-            savedForm.setId(Long.parseLong(createForm.get("id").toString()));
+            Long adminId = Long.parseLong(createForm.get("adminId").toString());
+            UserInfo admin = userInfoService.getUserById(adminId).get();
+            if (admin != null) {
+                savedForm.setAdmin(admin);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Admin with provided ID not found");
+            }
         }
 
         if (createForm.containsKey("title")) {
@@ -128,15 +138,17 @@ public class CreateFormController {
         }
 
         try {
-            String questionsJson = objectMapper.writeValueAsString(createForm.get("questions"));
-            savedForm.setQuestions(questionsJson);
+            if (createForm.containsKey("questions")) {
+                String questionsJson = objectMapper.writeValueAsString(createForm.get("questions"));
+                savedForm.setQuestions(questionsJson);
+            }
             createFormService.save(savedForm);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Form created successfully");
 
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid questions format");
         }
-
-        return ResponseEntity.status(HttpStatus.CREATED).body("Saved");
     }
 
     @DeleteMapping("/{id}")
@@ -155,7 +167,14 @@ public class CreateFormController {
         if (form.isPresent()) {
             CreateForm savedForm = new CreateForm();
             if (createForm.containsKey("adminId")) {
-                savedForm.setAdminId(Long.parseLong(createForm.get("adminId").toString()));
+                Long adminId = Long.parseLong(createForm.get("adminId").toString());
+                UserInfo admin = userInfoService.getUserById(adminId).get();
+                if (admin != null) {
+                    savedForm.setAdmin(admin);
+                } else {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body("Admin with provided ID not found");
+                }
             }
             if (createForm.containsKey("id")) {
                 savedForm.setId(Long.parseLong(createForm.get("id").toString()));

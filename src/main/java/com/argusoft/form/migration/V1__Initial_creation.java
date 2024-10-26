@@ -34,7 +34,7 @@ public class V1__Initial_creation extends BaseJavaMigration {
                                 + "fname VARCHAR(50) NOT NULL, "
                                 + "lname VARCHAR(50), "
                                 + "role_id INT NOT NULL, "
-                                + "address_id INT NOT NULL, "
+                                + "address_id INT, "
                                 + "FOREIGN KEY (role_id) REFERENCES " + schema + ".role(role_id), "
                                 + "FOREIGN KEY (address_id) REFERENCES " + schema + ".address(id)"
                                 + ")";

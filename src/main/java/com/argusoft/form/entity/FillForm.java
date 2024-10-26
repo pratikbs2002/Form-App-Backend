@@ -8,6 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class FillForm {
@@ -16,39 +18,40 @@ public class FillForm {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "form_id", nullable = false)
-    private Long formId;
-
-    private Long userId;
-
     @Column(columnDefinition = "jsonb")
     private String answers;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // @Embedded
-    // private LocationType location;
-
     @Column(columnDefinition = "loc")
     @Convert(converter = LocationPointConverter.class)
-    private LocationPoint location;
+    private LocationPoint locationPoint;
 
-    @Column(name = "location_id", nullable = false)
-    private Integer locationId;
+    @ManyToOne
+    @JoinColumn(name = "form_id", nullable = false)
+    private CreateForm form;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserInfo user;
+
+    @ManyToOne
+    @JoinColumn(name = "location_id", nullable = false)
+    private Location location;
 
     public FillForm() {
     }
 
-    public FillForm(Long id, Long formId, Long userId, String answers, LocalDateTime createdAt, LocationPoint location,
-            Integer locationId) {
+    public FillForm(Long id, String answers, LocalDateTime createdAt, LocationPoint locationPoint, CreateForm form,
+            UserInfo user, Location location) {
         this.id = id;
-        this.formId = formId;
-        this.userId = userId;
         this.answers = answers;
         this.createdAt = createdAt;
+        this.locationPoint = locationPoint;
+        this.form = form;
+        this.user = user;
         this.location = location;
-        this.locationId = locationId;
     }
 
     public Long getId() {
@@ -57,22 +60,6 @@ public class FillForm {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getFormId() {
-        return formId;
-    }
-
-    public void setFormId(Long formId) {
-        this.formId = formId;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 
     public String getAnswers() {
@@ -91,26 +78,43 @@ public class FillForm {
         this.createdAt = createdAt;
     }
 
-    public LocationPoint getLocation() {
+    public LocationPoint getLocationPoint() {
+        return locationPoint;
+    }
+
+    public void setLocationPoint(LocationPoint locationPoint) {
+        this.locationPoint = locationPoint;
+    }
+
+    public CreateForm getForm() {
+        return form;
+    }
+
+    public void setForm(CreateForm form) {
+        this.form = form;
+    }
+
+    public UserInfo getUserInfo() {
+        return user;
+    }
+
+    public void setUserInfo(UserInfo user) {
+        this.user = user;
+    }
+
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(LocationPoint location) {
+    public void setLocation(Location location) {
         this.location = location;
-    }
-
-    public Integer getLocationId() {
-        return locationId;
-    }
-
-    public void setLocationId(Integer locationId) {
-        this.locationId = locationId;
     }
 
     @Override
     public String toString() {
-        return "FillForm [id=" + id + ", formId=" + formId + ", userId=" + userId + ", answers=" + answers
-                + ", createdAt=" + createdAt + ", location=" + location + ", locationId=" + locationId + "]";
+        return "FillForm [id=" + id + ", answers=" + answers + ", createdAt=" + createdAt + ", locationPoint="
+                + locationPoint
+                + ", form=" + form + ", user=" + user + ", location=" + location + "]";
     }
 
 }

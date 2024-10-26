@@ -30,10 +30,10 @@ public class FillFormService {
     // LocationPoint location = new LocationPoint();
 
     LocationPointConverter locationPointConverter = new LocationPointConverter();
-    String points = locationPointConverter.convertToDatabaseColumn(fillForm.getLocation());
+    String points = locationPointConverter.convertToDatabaseColumn(fillForm.getLocationPoint());
 
-    fillFormRepository.insertFillForm(fillForm.getFormId(), fillForm.getUserId(), fillForm.getAnswers(),
-        fillForm.getCreatedAt(), points, fillForm.getLocationId());
+    fillFormRepository.insertFillForm(fillForm.getForm().getId(), fillForm.getUserInfo().getId(), fillForm.getAnswers(),
+        fillForm.getCreatedAt(), points, fillForm.getLocation().getId());
   }
 
   public void deleteById(Long id) {
@@ -57,10 +57,8 @@ public class FillFormService {
 
   public Page<FillForm> findAll(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
 
-            Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-
-            Pageable p = PageRequest.of(pageNumber, pageSize, sort);
-
+    Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+    Pageable p = PageRequest.of(pageNumber, pageSize, sort);
 
     return fillFormRepository.getAllFillForm(p);
   }
