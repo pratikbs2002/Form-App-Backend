@@ -21,12 +21,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.argusoft.form.entity.DataSourceEntity;
+import com.argusoft.form.entity.Role;
 import com.argusoft.form.entity.Schema;
 import com.argusoft.form.entity.User;
+import com.argusoft.form.entity.UserInfo;
+import com.argusoft.form.enums.RoleEnum;
 import com.argusoft.form.service.CreateAndMigrateService;
 import com.argusoft.form.service.DatasourceService;
 import com.argusoft.form.service.DbUserRegistrationService;
+import com.argusoft.form.service.RoleService;
 import com.argusoft.form.service.SchemaMappingService;
+import com.argusoft.form.service.UserInfoService;
 import com.argusoft.form.service.UserService;
 
 import jakarta.transaction.Transactional;
@@ -42,6 +47,12 @@ public class SchemaController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserInfoService userInfoService;
+
+    @Autowired
+    private RoleService roleService;
 
     @Autowired
     private DbUserRegistrationService dbUserRegistrationService;
@@ -95,9 +106,9 @@ public class SchemaController {
             User adminUser = new User();
             adminUser.setUsername(schemaId + "_" + schemaName + "_admin");
             adminUser.setSchemaName(schemaId);
-            adminUser.setRole("admin");
+            Role adminRole = roleService.findRoleByName(RoleEnum.ADMIN);
+            adminUser.setRole(adminRole);
             adminUser.setPassword(passwordEncoder.encode("admin"));
-
             // Create Database Admin user
             try {
                 dbUserRegistrationService.registerAdminDbUser(adminUser);
@@ -108,7 +119,8 @@ public class SchemaController {
             User reportingUser = new User();
             reportingUser.setUsername(schemaId + "_" + schemaName + "_reporting_user");
             reportingUser.setSchemaName(schemaId);
-            reportingUser.setRole("reporting_user");
+            Role reportingRole = roleService.findRoleByName(RoleEnum.ADMIN);
+            reportingUser.setRole(reportingRole);
             reportingUser.setPassword(passwordEncoder.encode("rep"));
 
             // Create Database Reporting user
@@ -123,7 +135,7 @@ public class SchemaController {
             adminDatasource.setSchemaName(schemaId);
             adminDatasource.setUsername(adminUser.getUsername());
             adminDatasource.setPassword(adminUser.getPassword());
-            adminDatasource.setRole(adminUser.getRole());
+            adminDatasource.setRole(adminUser.getRole().toString());
 
             datasourceService.addUserDataSource(adminDatasource);
 
@@ -134,7 +146,7 @@ public class SchemaController {
             reportingUserDatasource.setSchemaName(schemaId);
             reportingUserDatasource.setUsername(reportingUser.getUsername());
             reportingUserDatasource.setPassword(reportingUser.getPassword());
-            reportingUserDatasource.setRole(reportingUser.getRole());
+            reportingUserDatasource.setRole(reportingUser.getRole().toString());
 
             System.out.println(reportingUserDatasource);
             datasourceService.addUserDataSource(reportingUserDatasource);
@@ -146,6 +158,20 @@ public class SchemaController {
             // Add Database Reporting user details in public schema user table
             reportingUser.setUsername("default_" + schemaName + "_reporting_user");
             userService.registerNewUser(reportingUser);
+
+            // Add Database Admin user details in specific schema user table
+            // UserInfo adminUserInfo = new UserInfo();
+            // adminUserInfo.setFirstName("temp");
+            // adminUserInfo.setRole(new Role((Long) 1L, RoleEnum.ADMIN));
+
+            // userInfoService.createUser(adminUserInfo);
+
+            // Add Database Reporting user details in specific schema user table
+            // UserInfo reportingUserInfo = new UserInfo();
+            // adminUserInfo.setFirstName("temp");
+            // adminUserInfo.setRole(new Role((Long) 2L, RoleEnum.REPORTING_USER));
+
+            // userInfoService.createUser(reportingUserInfo);
 
             Map<String, Object> mp = new HashMap<>();
             mp.put("User", reportingUser);

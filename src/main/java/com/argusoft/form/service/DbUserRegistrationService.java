@@ -61,6 +61,10 @@ public class DbUserRegistrationService {
                 String grantPublicUserTableToAdminRole = "GRANT SELECT, INSERT, UPDATE ON public.user TO "
                                 + user.getUsername();
 
+                // Grant Public Schema Role Table to admin role
+                String grantPublicRoleTableToAdminRole = "GRANT SELECT, INSERT, UPDATE ON public.role TO "
+                                + user.getUsername();
+
                 // Create connection using datasource to execute above queries
                 try (Connection connection = dataSource.getConnection();
                                 Statement stmt = connection.createStatement()) {
@@ -75,6 +79,7 @@ public class DbUserRegistrationService {
                         stmt.executeUpdate(setDefaultFunctionPrivilegesQuery);
                         stmt.executeUpdate(grantPublicSchemaToAdminRole);
                         stmt.executeUpdate(grantPublicUserTableToAdminRole);
+                        stmt.executeUpdate(grantPublicRoleTableToAdminRole);
 
                 } catch (SQLException e) {
                         throw e;

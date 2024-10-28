@@ -24,9 +24,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.argusoft.form.entity.Role;
 import com.argusoft.form.entity.User;
+import com.argusoft.form.enums.RoleEnum;
 import com.argusoft.form.security.datasource_config.UserContextHolder;
 import com.argusoft.form.service.DbUserRegistrationService;
+import com.argusoft.form.service.RoleService;
 import com.argusoft.form.service.SchemaMappingService;
 import com.argusoft.form.service.UserService;
 
@@ -36,6 +39,8 @@ import jakarta.transaction.Transactional;
 @RequestMapping("/api/user")
 public class UserController {
 
+    @Autowired
+    private RoleService roleService;
     private final UserService userService;
 
     private final DbUserRegistrationService dbUserRegistrationService;
@@ -129,7 +134,13 @@ public class UserController {
         user.setSchemaName(schemaUUID);
         user.setUsername(userData.get("username") + "_" + UserContextHolder.getSchema() + "_" + userData.get("role"));
         user.setPassword(passwordEncoder.encode(userData.get("password")));
-        user.setRole(userData.get("role"));
+        if (userData.get("role").equals("admin")) {
+            Role role = roleService.findRoleByName(RoleEnum.ADMIN);
+            user.setRole(role);
+        } else {
+            Role role = roleService.findRoleByName(RoleEnum.REPORTING_USER);
+            user.setRole(role);
+        }
         System.out.println(user);
 
         // Create Database user

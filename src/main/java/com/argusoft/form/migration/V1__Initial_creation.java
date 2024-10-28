@@ -12,13 +12,6 @@ public class V1__Initial_creation extends BaseJavaMigration {
         @Override
         public void migrate(Context context) throws Exception {
                 String schema = context.getConfiguration().getSchemas()[0];
-                String createRoleTableSQL = "CREATE TABLE IF NOT EXISTS " + schema + ".role ("
-                                + "role_id SERIAL PRIMARY KEY, "
-                                + "role_name VARCHAR(20) NOT NULL"
-                                + ")";
-
-                String insertRoleSQL = "INSERT INTO " + schema
-                                + ".role (role_name) VALUES ('admin'), ('reporting user')";
 
                 String createAddressTableSQL = "CREATE TABLE IF NOT EXISTS " + schema + ".address ("
                                 + "id SERIAL PRIMARY KEY, "
@@ -35,7 +28,7 @@ public class V1__Initial_creation extends BaseJavaMigration {
                                 + "lname VARCHAR(50), "
                                 + "role_id INT NOT NULL, "
                                 + "address_id INT, "
-                                + "FOREIGN KEY (role_id) REFERENCES " + schema + ".role(role_id), "
+                                + "FOREIGN KEY (role_id) REFERENCES " + "public" + ".role(role_id), "
                                 + "FOREIGN KEY (address_id) REFERENCES " + schema + ".address(id)"
                                 + ")";
 
@@ -81,8 +74,6 @@ public class V1__Initial_creation extends BaseJavaMigration {
                         connection = context.getConnection();
                         statement = connection.createStatement();
 
-                        statement.execute(createRoleTableSQL);
-                        statement.execute(insertRoleSQL);
                         statement.execute(createAddressTableSQL);
                         statement.execute(createUsersTableSQL);
                         statement.execute(createCreateFormTableSQL);

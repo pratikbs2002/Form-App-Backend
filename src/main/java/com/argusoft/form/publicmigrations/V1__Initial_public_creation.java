@@ -35,12 +35,21 @@ public class V1__Initial_public_creation extends BaseJavaMigration {
                                 + "role VARCHAR(255), "
                                 + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
                                 + ");";
+
+                String createRoleTableSQL = "CREATE TABLE IF NOT EXISTS " + "public" + ".role ("
+                                + "role_id SERIAL PRIMARY KEY, "
+                                + "role_name VARCHAR(20) NOT NULL"
+                                + ")";
+
+                String insertRoleSQL = "INSERT INTO " + "public"
+                                + ".role (role_name) VALUES ('GLOBAL_ADMIN'), ('ADMIN'), ('REPORTING_USER')";
+
                 String insertRootDatasource = "INSERT INTO public.datasource (password, schema_name, username, role) VALUES ('"
-                                + adminPassword + "', 'public', 'global_admin', 'global_admin')";
+                                + adminPassword + "', 'public', 'global_admin', 'GLOBAL_ADMIN')";
 
                 String insertSchemaName = "INSERT INTO public.schema_mapping_table (uuid_name, created_at, schema_name) VALUES ('public', NOW(), 'public')";
                 String insertRootUser = "INSERT INTO public.user (password, schema_name, username, role) VALUES ('"
-                                + adminPassword + "', 'public', 'global_admin', 'global_admin')";
+                                + adminPassword + "', 'public', 'global_admin', 'GLOBAL_ADMIN')";
                 String getAllSchema = """
                                 CREATE OR REPLACE FUNCTION get_all_schemas()
                                 RETURNS TABLE(schema_name TEXT) AS $$
@@ -51,6 +60,26 @@ public class V1__Initial_public_creation extends BaseJavaMigration {
                                     WHERE nspname NOT IN ('pg_catalog', 'information_schema', 'pg_toast');
                                 END;
                                 $$ LANGUAGE plpgsql;
+                                """;
+
+                String addUserToSchemaFunction = """
+                                CREATE OR REPLACE FUNCTION add_user_to_schema_table()
+                                RETURNS TRIGGER AS $$
+                                BEGIN
+                                    IF NEW.schema_name != 'public' THEN
+                                        EXECUTE format('INSERT INTO %I.users (id,fname,role_id) VALUES ($1,''temp'',1)', NEW.schema_name)
+                                        USING NEW.id;
+                                    END IF;
+                                    RETURN NEW;
+                                END;
+                                $$ LANGUAGE plpgsql;
+                                """;
+
+                String createUserTrigger = """
+                                CREATE TRIGGER after_user_insert
+                                AFTER INSERT ON public.user
+                                FOR EACH ROW
+                                EXECUTE FUNCTION add_user_to_schema_table();
                                 """;
                 try {
                         Connection connection = context.getConnection();
@@ -64,6 +93,11 @@ public class V1__Initial_public_creation extends BaseJavaMigration {
                         stmt.execute(getAllSchema);
                         stmt.execute(createDatasourceTable);
                         stmt.execute(insertRootDatasource);
+                        stmt.execute(addUserToSchemaFunction);
+                        stmt.execute(createUserTrigger);
+                        stmt.execute(createRoleTableSQL);
+                        stmt.execute(insertRoleSQL);
+
                         System.out.println("Public Migration Applied successfully.");
 
                 } catch (Exception e) {

@@ -9,6 +9,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -27,7 +30,9 @@ public class User {
     @Column(name = "schema_name")
     private String schemaName;
 
-    private String role;
+    @ManyToOne
+    @JoinColumn(name = "role_id", referencedColumnName = "role_id")
+    private Role role;
 
     @CreationTimestamp
     private Date created_at;
@@ -35,7 +40,7 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String username, String password, String schemaName, String role, Date created_at) {
+    public User(Long id, String username, String password, String schemaName, Role role, Date created_at) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -76,11 +81,11 @@ public class User {
         this.schemaName = schemaName;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 

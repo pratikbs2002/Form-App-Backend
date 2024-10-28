@@ -1,5 +1,7 @@
 package com.argusoft.form.entity;
 
+import java.util.List;
+
 import com.argusoft.form.enums.RoleEnum;
 
 import jakarta.persistence.*;
@@ -17,7 +19,18 @@ public class Role {
     @Column(name = "role_name", nullable = false, length = 20)
     private RoleEnum roleName;
 
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
+    private List<User> users;
+
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
+    private List<UserInfo> userInfos;
+
     public Role() {
+    }
+
+    public Role(Long roleId, RoleEnum roleName) {
+        this.roleId = roleId;
+        this.roleName = roleName;
     }
 
     public Long getRoleId() {
@@ -34,6 +47,22 @@ public class Role {
 
     public void setRoleName(RoleEnum roleName) {
         this.roleName = roleName;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
+
+    public List<UserInfo> getUserInfos() {
+        return userInfos;
+    }
+
+    public void setUserInfos(List<UserInfo> userInfos) {
+        this.userInfos = userInfos;
     }
 
     @Override

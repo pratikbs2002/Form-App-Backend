@@ -17,7 +17,7 @@ public class UserInfo {
     private String lastName;
 
     @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false)
+    @JoinColumn(name = "role_id", referencedColumnName = "role_id")
     private Role role;
 
     @ManyToOne
