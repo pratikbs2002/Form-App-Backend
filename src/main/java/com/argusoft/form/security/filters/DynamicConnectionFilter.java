@@ -66,10 +66,16 @@ public class DynamicConnectionFilter extends OncePerRequestFilter {
                         try {
                             User user = userRepository.findByUsername(username)
                                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                            // System.out.println(user);
+                            System.out.println(user);
+
                             String currentSchema = schemaMappingService.findSchemaByUUIDName(user.getSchemaName()).get()
                                     .getSchemaName();
 
-                            DataSourceEntity dataSourceEntity = datasourceService.getDataSourceDetails(user.getRole().toString(),
+                            System.out.println(user.getRole().getRoleName());
+
+                            DataSourceEntity dataSourceEntity = datasourceService.getDataSourceDetails(
+                                    user.getRole().getRoleName().toString(),
                                     user.getSchemaName());
 
                             UserContextHolder.setLookUp(dataSourceEntity.getUsername());

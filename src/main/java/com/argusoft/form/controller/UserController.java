@@ -2,6 +2,7 @@ package com.argusoft.form.controller;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.argusoft.form.dto.RoleDTO;
+import com.argusoft.form.dto.UserDTO;
 import com.argusoft.form.entity.Role;
 import com.argusoft.form.entity.User;
 import com.argusoft.form.enums.RoleEnum;
@@ -63,60 +66,70 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllUser() {
+    public ResponseEntity<List<UserDTO>> getAllUser() {
         try {
-            return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+            List<UserDTO> users = userService.getAllUsers();
+            return ResponseEntity.ok(users);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(null);
         }
     }
 
     @GetMapping("/all/{schemaName}")
-    public ResponseEntity<?> getAllUserBySchemaName(
+    public ResponseEntity<Page<UserDTO>> getAllUserBySchemaName(
             @PathVariable String schemaName,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String role) {
         try {
             if (schemaName.isEmpty()) {
-                return ResponseEntity.badRequest().body("Schema name must not be empty");
+                return ResponseEntity.badRequest().body(null);
             }
 
             Pageable pageable = PageRequest.of(page, size);
-            Page<List<User>> users = userService.getAllUsersBySchema(schemaName, role, pageable);
+            Page<User> usersPage = userService.getAllUsersBySchema(schemaName, role, pageable);
 
-            if (users.isEmpty()) {
+            if (usersPage.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
+            Page<UserDTO> userDTOsPage = usersPage.map(user -> {
+                System.out.println(user);
+                RoleDTO roleDTO = new RoleDTO(user.getRole().getRoleId(), user.getRole().getRoleName());
+                return new UserDTO(user.getId(), user.getUsername(), user.getSchemaName(), roleDTO,
+                        user.getCreated_at());
+            });
 
-            return ResponseEntity.ok(users);
-
+            return ResponseEntity.ok(userDTOsPage);
         } catch (DataAccessException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Permission Denied");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 
     @GetMapping("/all/root")
-    public ResponseEntity<?> getAllUsersForRoot(
+    public ResponseEntity<Page<UserDTO>> getAllUsersForRoot(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String role) {
         try {
             Pageable pageable = PageRequest.of(page, size);
-            Page<List<User>> users = userService.getAllUsersForRoot(role, pageable);
+            Page<User> usersPage = userService.getAllUsersForRoot(role, pageable);
 
-            if (users.isEmpty()) {
+            if (usersPage.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
+            Page<UserDTO> userDTOsPage = usersPage.map(user -> {
+                RoleDTO roleDTO = new RoleDTO(user.getRole().getRoleId(), user.getRole().getRoleName());
+                return new UserDTO(user.getId(), user.getUsername(), user.getSchemaName(), roleDTO,
+                        user.getCreated_at());
+            });
 
-            return ResponseEntity.ok(users);
-
+            return ResponseEntity.ok(userDTOsPage);
         } catch (DataAccessException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Permission Denied");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 

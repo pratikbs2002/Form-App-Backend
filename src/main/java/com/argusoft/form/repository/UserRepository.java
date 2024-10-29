@@ -17,15 +17,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
         List<User> findBySchemaName(String schemaName);
 
-        Page<List<User>> findAllBySchemaName(String schemaName,
+        Page<User> findAllBySchemaName(String schemaName,
                         Pageable pageable);
 
-        Page<List<User>> findBySchemaNameAndRole(String schemaName, String role,
+        Page<User> findBySchemaNameAndRole(String schemaName, String role,
                         Pageable pageable);
 
         @Query("SELECT u FROM User u")
-        Page<List<User>> findAllUsersForRoot(Pageable pageable);
+        Page<User> findAllUsersForRoot(Pageable pageable);
 
         @Query("SELECT u FROM User u WHERE u.role = :role")
-        Page<List<User>> findAllUsersForRootByRole(String role, Pageable pageable);
+        Page<User> findAllUsersForRootByRole(String role, Pageable pageable);
 }

@@ -80,7 +80,7 @@ public class SchemaController {
             // Check if schema already exists !.........
             List<Schema> schemaBySchemaName = schemaMappingService.findSchemaBySchemaName(schemaName);
             if (!schemaBySchemaName.isEmpty()) {
-                return new ResponseEntity<>("Schema Already Present ... ", HttpStatus.OK);
+                return new ResponseEntity<>("Schema Already Present ... ", HttpStatus.BAD_REQUEST);
             }
 
             // To creation of schema ...
@@ -109,17 +109,21 @@ public class SchemaController {
             Role adminRole = roleService.findRoleByName(RoleEnum.ADMIN);
             adminUser.setRole(adminRole);
             adminUser.setPassword(passwordEncoder.encode("admin"));
+
             // Create Database Admin user
             try {
                 dbUserRegistrationService.registerAdminDbUser(adminUser);
             } catch (SQLException e) {
-                return ResponseEntity.ok(e.getMessage() + "Somthing Wrong!");
+                return ResponseEntity.badRequest().body(e.getMessage() + "Somthing Wrong!");
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Registration failed: " + e.getMessage());
             }
 
             User reportingUser = new User();
             reportingUser.setUsername(schemaId + "_" + schemaName + "_reporting_user");
             reportingUser.setSchemaName(schemaId);
-            Role reportingRole = roleService.findRoleByName(RoleEnum.ADMIN);
+            Role reportingRole = roleService.findRoleByName(RoleEnum.REPORTING_USER);
             reportingUser.setRole(reportingRole);
             reportingUser.setPassword(passwordEncoder.encode("rep"));
 
@@ -127,7 +131,10 @@ public class SchemaController {
             try {
                 dbUserRegistrationService.registerReportingDbUser(reportingUser);
             } catch (SQLException e) {
-                return ResponseEntity.ok(e.getMessage() + "Somthing Wrong!");
+                return ResponseEntity.badRequest().body(e.getMessage() + "Somthing Wrong!");
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Registration failed: " + e.getMessage());
             }
 
             // To add admin role datasource into datasource table
@@ -174,10 +181,10 @@ public class SchemaController {
             // userInfoService.createUser(reportingUserInfo);
 
             Map<String, Object> mp = new HashMap<>();
-            mp.put("User", reportingUser);
-            mp.put("SchemaName", schemaName);
-            mp.put("SchemaID", schemaId);
-            mp.put("Message", message);
+            // mp.put("User", reportingUser);
+            // mp.put("SchemaName", schemaName);
+            // mp.put("SchemaID", schemaId);
+            mp.put("message", "schema created successfully." + message);
 
             return new ResponseEntity<>(mp, HttpStatus.OK);
 

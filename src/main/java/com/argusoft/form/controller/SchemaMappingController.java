@@ -41,7 +41,7 @@ public class SchemaMappingController {
     @GetMapping("/pageable/all")
     public ResponseEntity<?> findPageableAllSchema(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "5") int size) {
         try {
             Pageable pageable = PageRequest.of(page, size);
             Page<List<Schema>> schemas = schemaMappingService.findPageableAllSchema(pageable);

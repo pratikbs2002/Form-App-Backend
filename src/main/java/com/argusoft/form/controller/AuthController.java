@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.argusoft.form.dto.RoleDTO;
+import com.argusoft.form.dto.UserDTO;
 import com.argusoft.form.entity.User;
 import com.argusoft.form.service.CustomUserDetails;
 import com.argusoft.form.service.DbUserRegistrationService;
@@ -69,18 +71,19 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody User user) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            user.getUsername(), user.getPassword()));
+                    new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            System.out.println(userDetails.getUsername());
-            System.out.println(authentication);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println(SecurityContextHolder.getContext().getAuthentication());
-            return ResponseEntity.ok(userDetails.getUser());
+            UserDTO userDto = new UserDTO(userDetails.getUser().getId(), userDetails.getUsername(),
+                    userDetails.getUser().getSchemaName(), new RoleDTO(userDetails.getUser().getRole().getRoleId(),
+                            userDetails.getUser().getRole().getRoleName()),
+                    userDetails.getUser().getCreated_at());
+
+            return ResponseEntity.ok(userDto);
 
         } catch (AuthenticationException e) {
-            System.out.println(e);
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password.");
         }
     }
 
