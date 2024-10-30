@@ -142,7 +142,7 @@ public class SchemaController {
             adminDatasource.setSchemaName(schemaId);
             adminDatasource.setUsername(adminUser.getUsername());
             adminDatasource.setPassword(adminUser.getPassword());
-            adminDatasource.setRole(adminUser.getRole().toString());
+            adminDatasource.setRole(adminUser.getRole().getRoleName().toString());
 
             datasourceService.addUserDataSource(adminDatasource);
 
@@ -153,7 +153,7 @@ public class SchemaController {
             reportingUserDatasource.setSchemaName(schemaId);
             reportingUserDatasource.setUsername(reportingUser.getUsername());
             reportingUserDatasource.setPassword(reportingUser.getPassword());
-            reportingUserDatasource.setRole(reportingUser.getRole().toString());
+            reportingUserDatasource.setRole(reportingUser.getRole().getRoleName().toString());
 
             System.out.println(reportingUserDatasource);
             datasourceService.addUserDataSource(reportingUserDatasource);
