@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.argusoft.form.dto.RoleDTO;
 import com.argusoft.form.dto.UserDTO;
+import com.argusoft.form.entity.Role;
 import com.argusoft.form.entity.User;
 import com.argusoft.form.repository.UserRepository;
 
@@ -33,7 +34,7 @@ public class UserService {
         return null;
     }
 
-   public List<UserDTO> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
                 .map(user -> new UserDTO(user.getId(), user.getUsername(), user.getSchemaName(),
@@ -41,18 +42,15 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public Page<User> getAllUsersBySchema(String schema, String role,
-            Pageable pageable) {
-        if (role != null && !role.isEmpty() && !role.equals("null")) {
-            return userRepository.findBySchemaNameAndRole(schema, role, pageable);
-        } else {
-            return userRepository.findAllBySchemaName(schema, pageable);
-        }
+    public Page<User> getAllUsersBySchema(String schema, Role role, Pageable pageable) {
+        return role != null 
+            ? userRepository.findBySchemaNameAndRole(schema, role, pageable)
+            : userRepository.findAllBySchemaName(schema, pageable);
     }
+    
 
-    public Page<User> getAllUsersForRoot(String role, Pageable pageable) {
-        if (role != null && !role.isEmpty() && !role.equals("null")) {
-
+    public Page<User> getAllUsersForRoot(Role role, Pageable pageable) {
+        if (role != null) {
             return userRepository.findAllUsersForRootByRole(role, pageable);
         } else {
 

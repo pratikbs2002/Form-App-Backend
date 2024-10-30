@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.argusoft.form.entity.Role;
 import com.argusoft.form.entity.User;
 import java.util.List;
 
@@ -20,12 +21,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
         Page<User> findAllBySchemaName(String schemaName,
                         Pageable pageable);
 
-        Page<User> findBySchemaNameAndRole(String schemaName, String role,
+        Page<User> findBySchemaNameAndRole(String schemaName, Role role,
                         Pageable pageable);
 
-        @Query("SELECT u FROM User u")
+        @Query("SELECT u FROM public.User u")
         Page<User> findAllUsersForRoot(Pageable pageable);
 
         @Query("SELECT u FROM User u WHERE u.role = :role")
-        Page<User> findAllUsersForRootByRole(String role, Pageable pageable);
+        Page<User> findAllUsersForRootByRole(Role role, Pageable pageable);
 }

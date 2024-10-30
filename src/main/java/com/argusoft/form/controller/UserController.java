@@ -81,19 +81,30 @@ public class UserController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String role) {
+        if (schemaName == null || schemaName.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
         try {
-            if (schemaName.isEmpty()) {
-                return ResponseEntity.badRequest().body(null);
+            Role roleObj = null;
+            if (role != null && !role.trim().equalsIgnoreCase("all")) {
+                try {
+                    RoleEnum roleEnum = RoleEnum.valueOf(role.toUpperCase());
+                    roleObj = roleService.findRoleByName(roleEnum);
+                } catch (IllegalArgumentException e) {
+                    System.out.println("No matching RoleEnum for: " + role);
+                    return ResponseEntity.badRequest().body(null);
+                }
             }
 
             Pageable pageable = PageRequest.of(page, size);
-            Page<User> usersPage = userService.getAllUsersBySchema(schemaName, role, pageable);
+            Page<User> usersPage = userService.getAllUsersBySchema(schemaName, roleObj, pageable);
 
             if (usersPage.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
+
             Page<UserDTO> userDTOsPage = usersPage.map(user -> {
-                System.out.println(user);
                 RoleDTO roleDTO = new RoleDTO(user.getRole().getRoleId(), user.getRole().getRoleName());
                 return new UserDTO(user.getId(), user.getUsername(), user.getSchemaName(), roleDTO,
                         user.getCreated_at());
@@ -101,9 +112,11 @@ public class UserController {
 
             return ResponseEntity.ok(userDTOsPage);
         } catch (DataAccessException e) {
+            System.out.println("Database access error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            System.out.println("Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
@@ -114,7 +127,18 @@ public class UserController {
             @RequestParam(required = false) String role) {
         try {
             Pageable pageable = PageRequest.of(page, size);
-            Page<User> usersPage = userService.getAllUsersForRoot(role, pageable);
+            RoleEnum roleEnum = null;
+            Role roleObj = new Role();
+            if (role != null) {
+                try {
+                    roleEnum = RoleEnum.valueOf(role.toUpperCase());
+                    if (roleEnum != null)
+                        roleObj = roleService.findRoleByName(roleEnum);
+                } catch (IllegalArgumentException e) {
+                    System.out.println("No matching RoleEnum for: " + role);
+                }
+            }
+            Page<User> usersPage = userService.getAllUsersForRoot(roleObj, pageable);
 
             if (usersPage.isEmpty()) {
                 return ResponseEntity.noContent().build();
@@ -147,10 +171,10 @@ public class UserController {
         user.setSchemaName(schemaUUID);
         user.setUsername(userData.get("username") + "_" + UserContextHolder.getSchema() + "_" + userData.get("role"));
         user.setPassword(passwordEncoder.encode(userData.get("password")));
-        if (userData.get("role").equals("admin")) {
+        if (userData.get("role").equals("ADMIN")) {
             Role role = roleService.findRoleByName(RoleEnum.ADMIN);
             user.setRole(role);
-        } else {
+        } else if (userData.get("role").equals("REPORTING_USER")) {
             Role role = roleService.findRoleByName(RoleEnum.REPORTING_USER);
             user.setRole(role);
         }
