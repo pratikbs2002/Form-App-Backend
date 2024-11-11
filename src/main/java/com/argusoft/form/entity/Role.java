@@ -7,7 +7,7 @@ import com.argusoft.form.enums.RoleEnum;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "role")
+@Table(name = "role", schema = "public")
 public class Role {
 
     @Id

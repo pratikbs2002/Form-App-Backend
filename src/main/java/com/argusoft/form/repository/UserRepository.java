@@ -24,7 +24,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
         Page<User> findBySchemaNameAndRole(String schemaName, Role role,
                         Pageable pageable);
 
-        @Query("SELECT u FROM public.User u")
+        @Query("SELECT u FROM User u")
         Page<User> findAllUsersForRoot(Pageable pageable);
 
         @Query("SELECT u FROM User u WHERE u.role = :role")

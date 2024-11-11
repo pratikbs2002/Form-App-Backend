@@ -98,7 +98,13 @@ public class UserController {
             }
 
             Pageable pageable = PageRequest.of(page, size);
-            Page<User> usersPage = userService.getAllUsersBySchema(schemaName, roleObj, pageable);
+            Page<User> usersPage;
+
+            if (roleObj != null && roleObj.getRoleId() != null) {
+                usersPage = userService.getAllUsersBySchema(schemaName, roleObj, pageable);
+            } else {
+                usersPage = userService.getAllUsersBySchema(schemaName, pageable);
+            }
 
             if (usersPage.isEmpty()) {
                 return ResponseEntity.noContent().build();
@@ -111,9 +117,11 @@ public class UserController {
             });
 
             return ResponseEntity.ok(userDTOsPage);
+
         } catch (DataAccessException e) {
             System.out.println("Database access error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -127,22 +135,28 @@ public class UserController {
             @RequestParam(required = false) String role) {
         try {
             Pageable pageable = PageRequest.of(page, size);
-            RoleEnum roleEnum = null;
             Role roleObj = new Role();
-            if (role != null) {
+
+            if (role != null && !role.trim().equalsIgnoreCase("all")) {
                 try {
-                    roleEnum = RoleEnum.valueOf(role.toUpperCase());
-                    if (roleEnum != null)
-                        roleObj = roleService.findRoleByName(roleEnum);
+                    RoleEnum roleEnum = RoleEnum.valueOf(role.toUpperCase());
+                    roleObj = roleService.findRoleByName(roleEnum);
                 } catch (IllegalArgumentException e) {
                     System.out.println("No matching RoleEnum for: " + role);
                 }
             }
-            Page<User> usersPage = userService.getAllUsersForRoot(roleObj, pageable);
+
+            Page<User> usersPage;
+            if (roleObj != null && roleObj.getRoleId() != null) {
+                usersPage = userService.getAllUsersForRoot(roleObj, pageable);
+            } else {
+                usersPage = userService.getAllUsersForRoot(pageable);
+            }
 
             if (usersPage.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
+
             Page<UserDTO> userDTOsPage = usersPage.map(user -> {
                 RoleDTO roleDTO = new RoleDTO(user.getRole().getRoleId(), user.getRole().getRoleName());
                 return new UserDTO(user.getId(), user.getUsername(), user.getSchemaName(), roleDTO,
@@ -171,33 +185,32 @@ public class UserController {
         user.setSchemaName(schemaUUID);
         user.setUsername(userData.get("username") + "_" + UserContextHolder.getSchema() + "_" + userData.get("role"));
         user.setPassword(passwordEncoder.encode(userData.get("password")));
-        if (userData.get("role").equals("ADMIN")) {
-            Role role = roleService.findRoleByName(RoleEnum.ADMIN);
-            user.setRole(role);
-        } else if (userData.get("role").equals("REPORTING_USER")) {
-            Role role = roleService.findRoleByName(RoleEnum.REPORTING_USER);
-            user.setRole(role);
-        }
-        System.out.println(user);
-
-        // Create Database user
+        System.out.println(userData.get("role"));
         try {
-            dbUserRegistrationService.registerAdminDbUser(user);
-        } catch (SQLException e) {
-            return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-
+            if (userData.get("role").toUpperCase().equals("ADMIN")) {
+                Role role = roleService.findRoleByName(RoleEnum.ADMIN);
+                user.setRole(role);
+            } else if (userData.get("role").toUpperCase().equals("REPORTING_USER")) {
+                Role role = roleService.findRoleByName(RoleEnum.REPORTING_USER);
+                System.out.println("gfgg");
+                System.out.println(role);
+                user.setRole(role);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>("Somthing wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        // // Add Database user details in public schema user table
+        // Add Database user details in public schema user table
         try {
-            UserContextHolder.setLookUp("public");
-            System.out.println(UserContextHolder.getLookUp());
             userService.registerNewUser(user);
         } catch (Exception e) {
             return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-
         }
 
-        return ResponseEntity.ok(user);
+        RoleDTO roleDTO = new RoleDTO(user.getRole().getRoleId(), user.getRole().getRoleName());
+        UserDTO userDTO = new UserDTO(user.getId(), user.getUsername(), user.getSchemaName(), roleDTO,
+                user.getCreated_at());
+
+        return ResponseEntity.ok(userDTO);
     }
 }

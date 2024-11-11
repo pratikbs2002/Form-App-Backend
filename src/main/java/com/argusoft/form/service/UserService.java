@@ -43,18 +43,18 @@ public class UserService {
     }
 
     public Page<User> getAllUsersBySchema(String schema, Role role, Pageable pageable) {
-        return role != null 
-            ? userRepository.findBySchemaNameAndRole(schema, role, pageable)
-            : userRepository.findAllBySchemaName(schema, pageable);
+        return userRepository.findBySchemaNameAndRole(schema, role, pageable);
     }
-    
+
+    public Page<User> getAllUsersBySchema(String schema, Pageable pageable) {
+        return userRepository.findAllBySchemaName(schema, pageable);
+    }
+
+    public Page<User> getAllUsersForRoot(Pageable pageable) {
+        return userRepository.findAllUsersForRoot(pageable);
+    }
 
     public Page<User> getAllUsersForRoot(Role role, Pageable pageable) {
-        if (role != null) {
-            return userRepository.findAllUsersForRootByRole(role, pageable);
-        } else {
-
-            return userRepository.findAllUsersForRoot(pageable);
-        }
+        return userRepository.findAllUsersForRootByRole(role, pageable);
     }
 }
