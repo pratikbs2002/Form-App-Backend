@@ -65,6 +65,10 @@ public class DbUserRegistrationService {
                 String grantPublicRoleTableToAdminRole = "GRANT SELECT, INSERT, UPDATE ON public.role TO "
                                 + user.getUsername();
 
+                // Grant USAGE and SELECT on the sequence associated with the user table
+                String grantPublicUserSequenceToAdminRole = "GRANT USAGE, SELECT ON SEQUENCE public.user_id_seq TO "
+                                + user.getUsername();
+
                 // Create connection using datasource to execute above queries
                 try (Connection connection = dataSource.getConnection();
                                 Statement stmt = connection.createStatement()) {
@@ -80,6 +84,7 @@ public class DbUserRegistrationService {
                         stmt.executeUpdate(grantPublicSchemaToAdminRole);
                         stmt.executeUpdate(grantPublicUserTableToAdminRole);
                         stmt.executeUpdate(grantPublicRoleTableToAdminRole);
+                        stmt.executeUpdate(grantPublicUserSequenceToAdminRole);
 
                 } catch (SQLException e) {
                         throw e;
