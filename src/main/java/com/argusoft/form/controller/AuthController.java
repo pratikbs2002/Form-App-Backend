@@ -40,7 +40,6 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
     @Autowired
     private DbUserRegistrationService dbUserRegistrationService;
 
@@ -66,16 +65,33 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User user) {
         try {
+            // Authenticate the user
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            UserDTO userDto = new UserDTO(userDetails.getUser().getId(), userDetails.getUsername(),
-                    userDetails.getUser().getSchemaName(), new RoleDTO(userDetails.getUser().getRole().getRoleId(),
-                            userDetails.getUser().getRole().getRoleName()),
-                    userDetails.getUser().getCreated_at());
+            User authenticatedUser = userDetails.getUser();
 
+            // Check if the user is soft-deleted
+            if (authenticatedUser.isDeleted()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("This account has been deactivated. Please contact support.");
+            }
+
+            // Set authentication context
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // Create UserDTO for response
+            UserDTO userDto = new UserDTO(
+                    authenticatedUser.getId(),
+                    authenticatedUser.getUsername(),
+                    authenticatedUser.getSchemaName(),
+                    new RoleDTO(authenticatedUser.getRole().getRoleId(), authenticatedUser.getRole().getRoleName()),
+                    authenticatedUser.getCreated_at(),
+                    authenticatedUser.isDeleted(),
+                    authenticatedUser.getDeleted_at());
+
+            // Return successful response
             return ResponseEntity.ok(userDto);
 
         } catch (AuthenticationException e) {

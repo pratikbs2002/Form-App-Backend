@@ -34,11 +34,16 @@ public class UserService {
         return null;
     }
 
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
                 .map(user -> new UserDTO(user.getId(), user.getUsername(), user.getSchemaName(),
-                        new RoleDTO(user.getRole().getRoleId(), user.getRole().getRoleName()), user.getCreated_at()))
+                        new RoleDTO(user.getRole().getRoleId(), user.getRole().getRoleName()), user.getCreated_at(),
+                        user.isDeleted(), user.getDeleted_at()))
                 .collect(Collectors.toList());
     }
 
@@ -57,4 +62,13 @@ public class UserService {
     public Page<User> getAllUsersForRoot(Role role, Pageable pageable) {
         return userRepository.findAllUsersForRootByRole(role, pageable);
     }
+
+    public void softDeleteUser(Long id) {
+        userRepository.softDeleteById(id);
+    }
+
+    public void restoreUser(Long id) {
+        userRepository.restoreById(id);
+    }
+
 }

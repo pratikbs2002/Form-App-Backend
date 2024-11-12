@@ -37,16 +37,25 @@ public class User {
     @CreationTimestamp
     private Date created_at;
 
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
+
+    @Column(name = "deleted_at")
+    private Date deleted_at;
+
     public User() {
     }
 
-    public User(Long id, String username, String password, String schemaName, Role role, Date created_at) {
+    public User(Long id, String username, String password, String schemaName, Role role, Date created_at,
+            boolean deleted, Date deleted_at) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.schemaName = schemaName;
         this.role = role;
         this.created_at = created_at;
+        this.deleted = deleted;
+        this.deleted_at = deleted_at;
     }
 
     public Long getId() {
@@ -97,10 +106,28 @@ public class User {
         this.created_at = created_at;
     }
 
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Date getDeleted_at() {
+        return deleted_at;
+    }
+
+    public void setDeleted_at(Date deleted_at) {
+        this.deleted_at = deleted_at;
+    }
+
     @Override
     public String toString() {
         return "User [id=" + id + ", username=" + username + ", password=" + password + ", schemaName=" + schemaName
-                + ", role=" + role + ", created_at=" + created_at + "]";
+                + ", role=" + role + ", created_at=" + created_at + ", deleted=" + deleted + ", deleted_at="
+                + deleted_at
+                + "]";
     }
 
 }

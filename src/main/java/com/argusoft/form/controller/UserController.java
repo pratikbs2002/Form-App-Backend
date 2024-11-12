@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
@@ -17,9 +18,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -113,7 +116,7 @@ public class UserController {
             Page<UserDTO> userDTOsPage = usersPage.map(user -> {
                 RoleDTO roleDTO = new RoleDTO(user.getRole().getRoleId(), user.getRole().getRoleName());
                 return new UserDTO(user.getId(), user.getUsername(), user.getSchemaName(), roleDTO,
-                        user.getCreated_at());
+                        user.getCreated_at(), user.isDeleted(), user.getDeleted_at());
             });
 
             return ResponseEntity.ok(userDTOsPage);
@@ -160,7 +163,7 @@ public class UserController {
             Page<UserDTO> userDTOsPage = usersPage.map(user -> {
                 RoleDTO roleDTO = new RoleDTO(user.getRole().getRoleId(), user.getRole().getRoleName());
                 return new UserDTO(user.getId(), user.getUsername(), user.getSchemaName(), roleDTO,
-                        user.getCreated_at());
+                        user.getCreated_at(), user.isDeleted(), user.getDeleted_at());
             });
 
             return ResponseEntity.ok(userDTOsPage);
@@ -171,7 +174,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/add/admin")
+    @PostMapping("/add/user")
     public ResponseEntity<?> addAdminUser(@RequestBody Map<String, String> userData) {
         String schemaUUID;
         try (Connection connection = dataSource.getConnection()) {
@@ -209,8 +212,32 @@ public class UserController {
 
         RoleDTO roleDTO = new RoleDTO(user.getRole().getRoleId(), user.getRole().getRoleName());
         UserDTO userDTO = new UserDTO(user.getId(), user.getUsername(), user.getSchemaName(), roleDTO,
-                user.getCreated_at());
+                user.getCreated_at(), user.isDeleted(), user.getDeleted_at());
 
         return ResponseEntity.ok(userDTO);
+    }
+
+    // Soft delete a user by ID
+    @DeleteMapping("/soft-delete/{id}")
+    public ResponseEntity<String> softDeleteUser(@PathVariable Long id) {
+        Optional<User> user = userService.getUserById(id);
+        if (user.isPresent()) {
+            userService.softDeleteUser(id);
+            return new ResponseEntity<>("User soft deleted successfully", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Restore a soft deleted user
+    @PutMapping("/restore/{id}")
+    public ResponseEntity<String> restoreUser(@PathVariable Long id) {
+        Optional<User> user = userService.getUserById(id);
+        if (user.isPresent() && user.get().isDeleted()) {
+            userService.restoreUser(id);
+            return new ResponseEntity<>("User restored successfully", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("User not found or not deleted", HttpStatus.NOT_FOUND);
+        }
     }
 }
