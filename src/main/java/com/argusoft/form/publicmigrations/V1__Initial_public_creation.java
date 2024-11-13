@@ -69,8 +69,8 @@ public class V1__Initial_public_creation extends BaseJavaMigration {
                                 RETURNS TRIGGER AS $$
                                 BEGIN
                                     IF NEW.schema_name != 'public' THEN
-                                        EXECUTE format('INSERT INTO %I.users (id,fname,role_id) VALUES ($1,''temp'',1)', NEW.schema_name)
-                                        USING NEW.id;
+                                        EXECUTE format('INSERT INTO %I.users (id,fname,role_id) VALUES ($1,''temp'',$2)', NEW.schema_name)
+                                        USING NEW.id, NEW.role_id;
                                     END IF;
                                     RETURN NEW;
                                 END;

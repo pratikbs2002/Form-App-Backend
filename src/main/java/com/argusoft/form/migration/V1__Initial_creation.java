@@ -22,14 +22,22 @@ public class V1__Initial_creation extends BaseJavaMigration {
                                 + "CONSTRAINT invalid_pincode CHECK (pincode BETWEEN 100000 AND 999999)"
                                 + ")";
 
+                String createLocationsTableSQL = "CREATE TABLE IF NOT EXISTS " + schema + ".locations ("
+                                + "id SERIAL PRIMARY KEY, "
+                                + "name VARCHAR(255) NOT NULL, "
+                                + "parent_id INT REFERENCES " + schema + ".locations(id) ON DELETE CASCADE"
+                                + ")";
+
                 String createUsersTableSQL = "CREATE TABLE IF NOT EXISTS " + schema + ".users ("
                                 + "id SERIAL PRIMARY KEY, "
                                 + "fname VARCHAR(50) NOT NULL, "
                                 + "lname VARCHAR(50), "
                                 + "role_id INT NOT NULL, "
                                 + "address_id INT, "
+                                + "location_id BIGINT, "
                                 + "FOREIGN KEY (role_id) REFERENCES " + "public" + ".role(role_id), "
-                                + "FOREIGN KEY (address_id) REFERENCES " + schema + ".address(id)"
+                                + "FOREIGN KEY (address_id) REFERENCES " + schema + ".address(id), "
+                                + "FOREIGN KEY (location_id) REFERENCES " + schema + ".locations(id)"
                                 + ")";
 
                 String createCreateFormTableSQL = "CREATE TABLE IF NOT EXISTS " + schema + ".create_form ("
@@ -39,12 +47,6 @@ public class V1__Initial_creation extends BaseJavaMigration {
                                 + "questions JSONB, "
                                 + "created_at TIMESTAMP DEFAULT NOW(), "
                                 + "FOREIGN KEY (admin_id) REFERENCES " + schema + ".users(id)"
-                                + ")";
-
-                String createLocationsTableSQL = "CREATE TABLE IF NOT EXISTS " + schema + ".locations ("
-                                + "id SERIAL PRIMARY KEY, "
-                                + "name VARCHAR(255) NOT NULL, "
-                                + "parent_id INT REFERENCES " + schema + ".locations(id) ON DELETE CASCADE"
                                 + ")";
 
                 String createLocType = "CREATE TYPE " + schema + ".loc AS (lat float, long float)";
@@ -74,10 +76,10 @@ public class V1__Initial_creation extends BaseJavaMigration {
                         connection = context.getConnection();
                         statement = connection.createStatement();
 
+                        statement.execute(createLocationsTableSQL);
                         statement.execute(createAddressTableSQL);
                         statement.execute(createUsersTableSQL);
                         statement.execute(createCreateFormTableSQL);
-                        statement.execute(createLocationsTableSQL);
                         statement.execute(createLocType);
                         statement.execute(createFillFormTableSQL);
                         statement.execute(insertRootLocationSQL);
