@@ -1,13 +1,18 @@
 package com.argusoft.form.controller;
 
+import com.argusoft.form.dto.RoleDTO;
+import com.argusoft.form.dto.UserInfoDTO;
 import com.argusoft.form.entity.UserInfo;
 import com.argusoft.form.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/userinfo")
@@ -46,4 +51,49 @@ public class UserInfoController {
         userInfoService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/location/{locationId}")
+    public ResponseEntity<List<UserInfoDTO>> getUsersByLocation(@PathVariable Long locationId) {
+        List<UserInfo> users = userInfoService.getUsersByLocation(locationId);
+        List<UserInfoDTO> userDtos = users.stream()
+                .map(user -> new UserInfoDTO(
+                        user.getId(),
+                        user.getFirstName(),
+                        user.getLastName(),
+                        new RoleDTO(user.getRole().getRoleId(), user.getRole().getRoleName()),
+                        user.getAddress(),
+                        user.getLocation().getId()))
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(userDtos, HttpStatus.OK);
+    }
+
+    // @Query(value = """
+    // WITH RECURSIVE location_hierarchy AS (
+    // SELECT id FROM location WHERE id = :locationId
+    // UNION ALL
+    // SELECT l.id FROM location l
+    // INNER JOIN location_hierarchy lh ON l.parent_id = lh.id
+    // )
+    // SELECT * FROM users u WHERE u.location_id IN (SELECT id FROM
+    // location_hierarchy)
+    // """, nativeQuery = true)
+    // List<User> findAllUsersByLocationId(@Param("locationId") Long locationId);
+
+    @GetMapping("/location/child/{locationId}")
+    public ResponseEntity<List<UserInfoDTO>> getUsersByLocationAndChildLocations(@PathVariable Long locationId) {
+        List<UserInfo> users = userInfoService.getUsersByLocationAndChildLocations(locationId);
+        List<UserInfoDTO> userDtos = users.stream()
+                .map(user -> new UserInfoDTO(
+                        user.getId(),
+                        user.getFirstName(),
+                        user.getLastName(),
+                        new RoleDTO(user.getRole().getRoleId(), user.getRole().getRoleName()),
+                        user.getAddress(),
+                        user.getLocation().getId()))
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(userDtos, HttpStatus.OK);
+    }
+
 }

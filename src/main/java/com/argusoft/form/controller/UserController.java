@@ -1,6 +1,7 @@
 package com.argusoft.form.controller;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +31,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.argusoft.form.dto.RoleDTO;
 import com.argusoft.form.dto.UserDTO;
+import com.argusoft.form.entity.Location;
 import com.argusoft.form.entity.Role;
 import com.argusoft.form.entity.User;
 import com.argusoft.form.enums.RoleEnum;
 import com.argusoft.form.security.datasource_config.UserContextHolder;
 import com.argusoft.form.service.DbUserRegistrationService;
+import com.argusoft.form.service.LocationService;
 import com.argusoft.form.service.RoleService;
 import com.argusoft.form.service.SchemaMappingService;
+import com.argusoft.form.service.UserInfoService;
 import com.argusoft.form.service.UserService;
 
 import jakarta.transaction.Transactional;
@@ -52,6 +56,12 @@ public class UserController {
     private final DbUserRegistrationService dbUserRegistrationService;
 
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserInfoService userInfoService;
+
+    @Autowired
+    private LocationService locationService;
 
     @Autowired
     private DataSource dataSource;
@@ -183,6 +193,7 @@ public class UserController {
             return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
+        Location location = null;
 
         User user = new User();
         user.setSchemaName(schemaUUID);
@@ -198,6 +209,24 @@ public class UserController {
                 System.out.println("gfgg");
                 System.out.println(role);
                 user.setRole(role);
+
+                // if (!userData.containsKey("location")) {
+                //     return new ResponseEntity<>("Location ID is required for REPORTING_USER", HttpStatus.BAD_REQUEST);
+                // }
+                // try {
+                //     try {
+                //         Long locationId = Long.parseLong(userData.get("location"));
+                //         location = locationService.findLocationById(locationId).orElse(null);
+                //         if (location == null) {
+                //             return new ResponseEntity<>("Invalid Location ID", HttpStatus.BAD_REQUEST);
+                //         }
+                //     } catch (NumberFormatException e) {
+                //         return new ResponseEntity<>("Location ID must be a valid number", HttpStatus.BAD_REQUEST);
+                //     }
+                // } catch (Exception e) {
+                //     return new ResponseEntity<>("Error fetching location: " + e.getMessage(),
+                //             HttpStatus.INTERNAL_SERVER_ERROR);
+                // }
             }
         } catch (Exception e) {
             return new ResponseEntity<>("Somthing wrong", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -206,6 +235,9 @@ public class UserController {
         // Add Database user details in public schema user table
         try {
             userService.registerNewUser(user);
+            // if (userData.get("role").toUpperCase().equalsIgnoreCase("REPORTING_USER")) {
+            //     insertUserIntoSchemaTable(user.getId(), schemaUUID, location.getId());
+            // }
         } catch (Exception e) {
             return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -213,7 +245,9 @@ public class UserController {
         RoleDTO roleDTO = new RoleDTO(user.getRole().getRoleId(), user.getRole().getRoleName());
         UserDTO userDTO = new UserDTO(user.getId(), user.getUsername(), user.getSchemaName(), roleDTO,
                 user.getCreated_at(), user.isDeleted(), user.getDeleted_at());
-
+        // System.out.println("=======================");
+        // System.out.println(userDTO);
+        // System.out.println(userInfoService.getUserById(userDTO.getId()).get());
         return ResponseEntity.ok(userDTO);
     }
 
@@ -240,4 +274,18 @@ public class UserController {
             return new ResponseEntity<>("User not found or not deleted", HttpStatus.NOT_FOUND);
         }
     }
+
+    // private void insertUserIntoSchemaTable(Long userId, String schemaUUID, Long location) {
+    //     String sql = "INSERT INTO " + schemaUUID + ".users (id, fname, role_id, location) VALUES (?, 'temp', ?, ?)";
+    //     try (Connection connection = dataSource.getConnection();
+    //             PreparedStatement statement = connection.prepareStatement(sql)) {
+    //         statement.setLong(1, userId);
+    //         statement.setLong(2, 3);
+    //         statement.setLong(3, location);
+    //         statement.executeUpdate();
+    //     } catch (Exception e) {
+    //         throw new RuntimeException("Error inserting user into schema table: " + e.getMessage(), e);
+    //     }
+    // }
+
 }

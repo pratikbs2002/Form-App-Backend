@@ -1,37 +1,20 @@
-package com.argusoft.form.entity;
+package com.argusoft.form.dto;
 
-import jakarta.persistence.*;
+import com.argusoft.form.entity.Address;
 
-@Entity
-@Table(name = "users")
-public class UserInfo {
+public class UserInfoDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "fname", nullable = false)
     private String firstName;
-
-    @Column(name = "lname")
     private String lastName;
-
-    @ManyToOne
-    @JoinColumn(name = "role_id", referencedColumnName = "role_id")
-    private Role role;
-
-    @ManyToOne
-    @JoinColumn(name = "address_id")
+    private RoleDTO role;
     private Address address;
+    private Long location;
 
-    @ManyToOne
-    @JoinColumn(name = "location_id", nullable = false)
-    private Location location;
-
-    public UserInfo() {
+    public UserInfoDTO() {
     }
 
-    public UserInfo(Long id, String firstName, String lastName, Role role, Address address, Location location) {
+    public UserInfoDTO(Long id, String firstName, String lastName, RoleDTO role, Address address, Long location) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -64,11 +47,11 @@ public class UserInfo {
         this.lastName = lastName;
     }
 
-    public Role getRole() {
+    public RoleDTO getRoleDTO() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRoleDTO(RoleDTO role) {
         this.role = role;
     }
 
@@ -80,12 +63,11 @@ public class UserInfo {
         this.address = address;
     }
 
-    public Location getLocation() {
+    public Long getLocation() {
         return location;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(Long location) {
         this.location = location;
     }
-
 }
