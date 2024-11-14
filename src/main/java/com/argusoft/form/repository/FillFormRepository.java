@@ -18,17 +18,17 @@ public interface FillFormRepository extends JpaRepository<FillForm, Long> {
 
         @Transactional
         @Modifying
-        @Query(value = "INSERT INTO fill_form (form_id, user_id, answers, created_at, location, location_id) VALUES (:formId, :userId, CAST(:answers AS jsonb), :createdAt, CAST(:location AS loc), :locationId)", nativeQuery = true)
+        @Query(value = "INSERT INTO fill_form (form_id, user_id, answers, created_at, location, location_id, is_submitted) VALUES (:formId, :userId, CAST(:answers AS jsonb), :createdAt, CAST(:location AS loc), :locationId, :isSubmitted)", nativeQuery = true)
         void insertFillForm(Long formId, Long userId, String answers, LocalDateTime createdAt, String location,
-                        Integer locationId);
+                        Integer locationId, boolean isSubmitted);
 
-        // @Transactional
-        // @Modifying
-        // @Query(value = "UPDATE fill_form SET form_id = :formId, user_id = :userId, answers = CAST(:answers AS jsonb), created_at = :createdAt, location = :location, location_id = :locationId  WHERE form_id = :formId AND user_id = :userId", nativeQuery = true)
-        // void updateFillForm(Long formId, Long userId, String answers, LocalDateTime createdAt, String location,
-        //                 Integer locationId);
+        @Transactional
+        @Modifying
+        @Query(value = "UPDATE fill_form SET form_id = :formId, user_id = :userId, answers = CAST(:answers AS jsonb), created_at = :createdAt, location = :location, location_id = :locationId, is_submitted = :isSubmitted  WHERE form_id = :formId AND user_id = :userId", nativeQuery = true)
+        void updateFillForm(Long formId, Long userId, String answers, LocalDateTime createdAt, String location,
+                        Integer locationId, boolean isSubmitted);
 
-        @Query("SELECT f FROM FillForm f")
+        @Query("SELECT f FROM FillForm f WHERE f.isSubmitted = true")
         Page<FillForm> getAllFillForm(Pageable p);
 
         // @Query(value = "SELECT * FROM fill_form WHERE id = :id", nativeQuery = true)

@@ -20,16 +20,15 @@ public class CreateForm {
 
     private String title;
 
-    
     @Column(columnDefinition = "jsonb")
     private String questions;
-    
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
-    
+
     public CreateForm() {
     }
-    
+
     public CreateForm(Long id, String title, Long adminId, String questions, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
@@ -41,11 +40,11 @@ public class CreateForm {
     public Long getId() {
         return id;
     }
-    
+
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     public String getTitle() {
         return title;
     }
@@ -53,7 +52,7 @@ public class CreateForm {
     public void setTitle(String title) {
         this.title = title;
     }
-    
+
     public Long getAdminId() {
         return adminId;
     }

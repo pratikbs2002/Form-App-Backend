@@ -61,6 +61,11 @@ public class FillFormController {
     if (fillForm.containsKey("locationId")) {
       submittedForm.setLocationId(Integer.parseInt(fillForm.get("locationId").toString()));
     }
+    if (fillForm.containsKey("isSubmitted")) {
+      submittedForm.setIsSubmitted(true);
+    } else {
+      submittedForm.setIsSubmitted(false);
+    }
     LocationPoint locationPoint = new LocationPoint(20.202020, 20.202020);
 
     submittedForm.setLocation(locationPoint);
@@ -117,8 +122,10 @@ public class FillFormController {
       @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
       @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir) {
 
+        System.out.println("= ==========================");
     Page<FillForm> pageFillForm;
 
+    
     if ((sortBy).equalsIgnoreCase("title")) {
       pageFillForm = fillFormService.findAll(pageNumber, pageSize, "id", sortDir);
 
@@ -148,9 +155,10 @@ public class FillFormController {
     fillFormResponseDTO.setLastPage(pageFillForm.isLast());
 
     for (FillForm fillForm : pageFillForm.getContent()) {
+      
       FillFormDTO fillFormDTO = new FillFormDTO();
       String title = createFormService.findById(fillForm.getFormId()).get().getTitle();
-
+      
       fillFormDTO.setTitle(title);
       fillFormDTO.setFormId(fillForm.getFormId());
       fillFormDTO.setUserId(fillForm.getUserId());
@@ -158,6 +166,8 @@ public class FillFormController {
       fillFormDTO.setLocationId(fillForm.getLocationId());
       fillFormDTO.setLocation(fillForm.getLocation());
       fillFormDTO.setCreatedAt(fillForm.getCreatedAt());
+      fillFormDTO.setSubmitted(fillForm.getIsSubmitted());
+      System.out.println(fillFormDTO);
       try {
         List<AnswerDTO> answersList = objectMapper.readValue(fillForm.getAnswers(),
             new TypeReference<List<AnswerDTO>>() {

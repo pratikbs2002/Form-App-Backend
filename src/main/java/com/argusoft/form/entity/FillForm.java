@@ -37,11 +37,14 @@ public class FillForm {
     @Column(name = "location_id", nullable = false)
     private Integer locationId;
 
+    @Column(name = "is_submitted")
+    private boolean isSubmitted;
+
     public FillForm() {
     }
 
     public FillForm(Long id, Long formId, Long userId, String answers, LocalDateTime createdAt, LocationPoint location,
-            Integer locationId) {
+            Integer locationId, boolean isSubmitted) {
         this.id = id;
         this.formId = formId;
         this.userId = userId;
@@ -49,6 +52,7 @@ public class FillForm {
         this.createdAt = createdAt;
         this.location = location;
         this.locationId = locationId;
+        this.isSubmitted = isSubmitted;
     }
 
     public Long getId() {
@@ -107,10 +111,19 @@ public class FillForm {
         this.locationId = locationId;
     }
 
+    public boolean getIsSubmitted() {
+        return isSubmitted;
+    }
+
     @Override
     public String toString() {
         return "FillForm [id=" + id + ", formId=" + formId + ", userId=" + userId + ", answers=" + answers
-                + ", createdAt=" + createdAt + ", location=" + location + ", locationId=" + locationId + "]";
+                + ", createdAt=" + createdAt + ", location=" + location + ", locationId=" + locationId
+                + ", isSubmitted=" + isSubmitted + "]";
+    }
+
+    public void setIsSubmitted(boolean isSubmitted) {
+        this.isSubmitted = isSubmitted;
     }
 
 }

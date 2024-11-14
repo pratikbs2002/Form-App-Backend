@@ -33,7 +33,7 @@ public class FillFormService {
     String points = locationPointConverter.convertToDatabaseColumn(fillForm.getLocation());
 
     fillFormRepository.insertFillForm(fillForm.getFormId(), fillForm.getUserId(), fillForm.getAnswers(),
-        fillForm.getCreatedAt(), points, fillForm.getLocationId());
+        fillForm.getCreatedAt(), points, fillForm.getLocationId(), fillForm.getIsSubmitted());
   }
 
   public void deleteById(Long id) {
@@ -63,5 +63,9 @@ public class FillFormService {
 
 
     return fillFormRepository.getAllFillForm(p);
+  }
+
+  public void updateFillForm(){
+    // fillFormRepository.updateFillForm(nu ll, null, null, null, null, null, false);
   }
 }
