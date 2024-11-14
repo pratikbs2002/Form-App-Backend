@@ -63,4 +63,8 @@ public class UserInfoService {
         return locationIds;
     }
 
+    public void updateLocation(Long userId, Location newLocation) {
+        userInfoRepository.updateUserLocation(userId, newLocation);
+    }
+
 }

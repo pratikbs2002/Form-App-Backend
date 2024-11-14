@@ -57,7 +57,7 @@ public class FillFormController {
   private LocationService locationService;
 
   @PostMapping("/add")
-  public ResponseEntity<String> submittedForm(@RequestBody Map<String, Object> fillForm) {
+  public ResponseEntity<String> addSubmittedForm(@RequestBody Map<String, Object> fillForm) {
     System.out.println(fillForm);
 
     FillForm submittedForm = new FillForm();
@@ -66,6 +66,7 @@ public class FillFormController {
       Optional<CreateForm> formOptional = createFormService.findById(formId);
       if (formOptional.isPresent()) {
         submittedForm.setForm(formOptional.get());
+        // submittedForm.sett;
       } else {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body("Form not found");
@@ -87,6 +88,7 @@ public class FillFormController {
       Long locationId = Long.parseLong(fillForm.get("locationId").toString());
 
       Optional<Location> location = locationService.findLocationById(locationId);
+      System.out.println(location.get());
       if (location.isPresent()) {
         submittedForm.setLocation(location.get());
       } else {
@@ -94,31 +96,27 @@ public class FillFormController {
             .body("Location not found");
       }
     }
-    
+
     if (fillForm.containsKey("isSubmitted")) {
       submittedForm.setIsSubmitted(true);
     } else {
       submittedForm.setIsSubmitted(false);
     }
-    if (fillForm.containsKey("isSubmitted")) {
-      submittedForm.setIsSubmitted(true);
-    } else {
-      submittedForm.setIsSubmitted(false);
-    }
+
+    // System.out.println(submittedForm);
     LocationPoint locationPoint = new LocationPoint(20.202020, 20.202020);
 
     submittedForm.setLocationPoint(locationPoint);
-
+    // System.out.println(locationPoint);
     try {
       String answersJson = objectMapper.writeValueAsString(fillForm.get("answers"));
       submittedForm.setAnswers(answersJson);
-      System.out.println(submittedForm);
       fillFormService.save(submittedForm);
     } catch (Exception e) {
-      System.out.println(e);
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
+      // System.out.println(e);
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " +
+          e.getMessage());
     }
-
     return ResponseEntity.status(HttpStatus.CREATED).body("Submitted");
   }
 
@@ -161,10 +159,9 @@ public class FillFormController {
       @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
       @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir) {
 
-        System.out.println("= ==========================");
+    System.out.println("= ==========================");
     Page<FillForm> pageFillForm;
 
-    
     if ((sortBy).equalsIgnoreCase("title")) {
       pageFillForm = fillFormService.findAll(pageNumber, pageSize, "id", sortDir);
 
@@ -194,12 +191,10 @@ public class FillFormController {
     fillFormResponseDTO.setLastPage(pageFillForm.isLast());
 
     for (FillForm fillForm : pageFillForm.getContent()) {
-      
+
       FillFormDTO fillFormDTO = new FillFormDTO();
       String title = createFormService.findById(fillForm.getForm().getId()).get().getTitle();
 
-      
-      
       fillFormDTO.setTitle(title);
       fillFormDTO.setFormId(fillForm.getForm().getId());
       fillFormDTO.setUserId(fillForm.getUserInfo().getId());

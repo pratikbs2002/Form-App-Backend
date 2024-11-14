@@ -25,7 +25,7 @@ public class UserInfo {
     private Address address;
 
     @ManyToOne
-    @JoinColumn(name = "location_id", nullable = false)
+    @JoinColumn(name = "location_id")
     private Location location;
 
     public UserInfo() {

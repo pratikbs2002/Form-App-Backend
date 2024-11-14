@@ -28,7 +28,7 @@ public interface FillFormRepository extends JpaRepository<FillForm, Long> {
         void updateFillForm(Long formId, Long userId, String answers, LocalDateTime createdAt, String location,
                         Integer locationId, boolean isSubmitted);
 
-        @Query("SELECT f FROM FillForm f WHERE f.isSubmitted = true")
+        @Query("SELECT f FROM FillForm f WHERE f.isSubmitted = false")
         Page<FillForm> getAllFillForm(Pageable p);
 
         // @Query(value = "SELECT * FROM fill_form WHERE id = :id", nativeQuery = true)

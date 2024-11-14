@@ -76,7 +76,12 @@ public class Location {
 
     @Override
     public String toString() {
-        return "Location [id=" + id + ", name=" + name + ", parent=" + parent + ", children=" + children + "]";
+        return "Location{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", parent=" + (parent != null ? "Location(id=" + parent.getId() + ")" : "null") +
+                ", childrenCount=" + (children != null ? children.size() : 0) +
+                '}';
     }
 
 }

@@ -60,6 +60,7 @@ public class V1__Initial_creation extends BaseJavaMigration {
                                 + "created_at TIMESTAMP DEFAULT NOW(), "
                                 + "location loc NOT NULL, "
                                 + "location_id INT NOT NULL, "
+                                + "is_submitted BOOLEAN DEFAULT FALSE, "
                                 + "FOREIGN KEY (form_id) REFERENCES " + schema + ".create_form(id), "
                                 + "FOREIGN KEY (user_id) REFERENCES " + schema + ".users(id), "
                                 + "FOREIGN KEY (location_id) REFERENCES " + schema + ".locations(id), "

@@ -3,6 +3,7 @@ package com.argusoft.form.controller;
 import com.argusoft.form.dto.RoleDTO;
 import com.argusoft.form.dto.UserInfoDTO;
 import com.argusoft.form.entity.UserInfo;
+import com.argusoft.form.service.LocationService;
 import com.argusoft.form.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.AccessFlag.Location;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +22,9 @@ public class UserInfoController {
 
     @Autowired
     private UserInfoService userInfoService;
+
+    @Autowired
+    private LocationService locationService;
 
     @GetMapping
     public ResponseEntity<List<UserInfo>> getAllUsers() {
@@ -94,6 +99,27 @@ public class UserInfoController {
                 .collect(Collectors.toList());
 
         return new ResponseEntity<>(userDtos, HttpStatus.OK);
+    }
+
+    @PutMapping("/{userId}/location/{locationId}")
+    public ResponseEntity<String> updateUserLocation(
+            @PathVariable Long userId,
+            @PathVariable Long locationId) {
+
+        com.argusoft.form.entity.Location newLocation = locationService.findLocationById(locationId).orElse(null);
+
+        if (newLocation == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Location not found");
+        }
+
+        // Update user location
+        try {
+            userInfoService.updateLocation(userId, newLocation);
+            return ResponseEntity.ok("User location updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to update user location: " + e.getMessage());
+        }
     }
 
 }

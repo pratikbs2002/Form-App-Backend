@@ -124,15 +124,14 @@ public class CreateFormController {
 
         if (createForm.containsKey("adminId")) {
             Long adminId = Long.parseLong(createForm.get("adminId").toString());
-            UserInfo admin = userInfoService.getUserById(adminId).get();
-            if (admin != null) {
-                savedForm.setAdmin(admin);
+            Optional<UserInfo> admin = userInfoService.getUserById(adminId);
+            if (admin.isPresent()) {
+                savedForm.setAdmin(admin.get());
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("Admin with provided ID not found");
             }
         }
-
         if (createForm.containsKey("title")) {
             savedForm.setTitle(createForm.get("title").toString());
         }
