@@ -22,6 +22,7 @@ public class CreateForm {
     @Column(columnDefinition = "jsonb")
     private String questions;
 
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -43,10 +44,10 @@ public class CreateForm {
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
+
 
     public String getTitle() {
         return title;
@@ -57,8 +58,8 @@ public class CreateForm {
     }
 
     public String getQuestions() {
-        return questions;
-    }
+        return questions;}
+
 
     public void setQuestions(String questions) {
         this.questions = questions;

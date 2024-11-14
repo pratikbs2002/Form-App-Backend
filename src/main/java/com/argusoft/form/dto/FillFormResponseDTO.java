@@ -73,7 +73,7 @@ public class FillFormResponseDTO {
     this.lastPage = lastPage;
   }
 
-  public void addContent(FillFormDTO fillFormDTO){
+  public void addContent(FillFormDTO fillFormDTO) {
     content.add(fillFormDTO);
   }
 

@@ -15,12 +15,13 @@ public class FillFormDTO {
   private LocalDateTime createdAt;
   private LocationPoint location;
   private Long locationId;
+  private boolean isSubmitted;
 
   public FillFormDTO() {
   }
 
   public FillFormDTO(Long id, String title, Long formId, Long userId, List<AnswerDTO> answers, LocalDateTime createdAt,
-      LocationPoint location, Long locationId) {
+      LocationPoint location, Long locationId, boolean isSubmitted) {
     this.id = id;
     this.title = title;
     this.formId = formId;
@@ -29,6 +30,7 @@ public class FillFormDTO {
     this.createdAt = createdAt;
     this.location = location;
     this.locationId = locationId;
+    this.isSubmitted = isSubmitted;
   }
 
   public Long getId() {
@@ -87,10 +89,13 @@ public class FillFormDTO {
     this.locationId = locationId;
   }
 
+  
+
   @Override
   public String toString() {
-    return "FillFormDTO [id=" + id + ", formId=" + formId + ", userId=" + userId + ", answers=" + answers
-        + ", createdAt=" + createdAt + ", location=" + location + ", locationId=" + locationId + "]";
+    return "FillFormDTO [id=" + id + ", title=" + title + ", formId=" + formId + ", userId=" + userId + ", answers="
+        + answers + ", createdAt=" + createdAt + ", location=" + location + ", locationId=" + locationId
+        + ", isSubmitted=" + isSubmitted + "]";
   }
 
   public String getTitle() {
@@ -99,6 +104,14 @@ public class FillFormDTO {
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  public boolean isSubmitted() {
+    return isSubmitted;
+  }
+
+  public void setSubmitted(boolean isSubmitted) {
+    this.isSubmitted = isSubmitted;
   }
 
 }

@@ -33,7 +33,7 @@ public class FillFormService {
     String points = locationPointConverter.convertToDatabaseColumn(fillForm.getLocationPoint());
 
     fillFormRepository.insertFillForm(fillForm.getForm().getId(), fillForm.getUserInfo().getId(), fillForm.getAnswers(),
-        fillForm.getCreatedAt(), points, fillForm.getLocation().getId());
+        fillForm.getCreatedAt(), points, fillForm.getLocation().getId(), fillForm.getIsSubmitted());
   }
 
   public void deleteById(Long id) {
@@ -61,5 +61,10 @@ public class FillFormService {
     Pageable p = PageRequest.of(pageNumber, pageSize, sort);
 
     return fillFormRepository.getAllFillForm(p);
+  }
+
+  public void updateFillForm() {
+    // fillFormRepository.updateFillForm(nu ll, null, null, null, null, null,
+    // false);
   }
 }

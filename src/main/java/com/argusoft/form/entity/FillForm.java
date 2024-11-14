@@ -40,11 +40,14 @@ public class FillForm {
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
 
+    @Column(name = "is_submmited")
+    private boolean isSubmmited;
+
     public FillForm() {
     }
 
     public FillForm(Long id, String answers, LocalDateTime createdAt, LocationPoint locationPoint, CreateForm form,
-            UserInfo user, Location location) {
+            UserInfo user, Location location, boolean isSubmmited) {
         this.id = id;
         this.answers = answers;
         this.createdAt = createdAt;
@@ -52,6 +55,7 @@ public class FillForm {
         this.form = form;
         this.user = user;
         this.location = location;
+        this.isSubmmited = isSubmmited;
     }
 
     public Long getId() {
@@ -110,11 +114,27 @@ public class FillForm {
         this.location = location;
     }
 
+    public UserInfo getUser() {
+        return user;
+    }
+
+    public void setUser(UserInfo user) {
+        this.user = user;
+    }
+
+    public boolean getIsSubmitted() {
+        return isSubmmited;
+    }
+
+    public void setIsSubmitted(boolean isSubmmited) {
+        this.isSubmmited = isSubmmited;
+    }
+
     @Override
     public String toString() {
         return "FillForm [id=" + id + ", answers=" + answers + ", createdAt=" + createdAt + ", locationPoint="
-                + locationPoint
-                + ", form=" + form + ", user=" + user + ", location=" + location + "]";
+                + locationPoint + ", form=" + form + ", user=" + user + ", location=" + location + ", isSubmmited="
+                + isSubmmited + "]";
     }
 
 }
