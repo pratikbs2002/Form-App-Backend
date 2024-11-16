@@ -1,5 +1,6 @@
 package com.argusoft.form.service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +26,6 @@ public class FillFormService {
   private EntityManager entityManager;
 
   public void save(FillForm fillForm) {
-    System.out.println("inside-------------------");
-    System.out.println(fillForm);
-    // LocationPoint location = new LocationPoint();
-
     LocationPointConverter locationPointConverter = new LocationPointConverter();
     String points = locationPointConverter.convertToDatabaseColumn(fillForm.getLocationPoint());
 
@@ -63,8 +60,23 @@ public class FillFormService {
     return fillFormRepository.getAllFillForm(p);
   }
 
-  public void updateFillForm() {
-    // fillFormRepository.updateFillForm(nu ll, null, null, null, null, null,
-    // false);
+  public Page<FillForm> getAllFillFormByReportingUserId(Integer pageNumber, Integer pageSize, String sortBy,
+      String sortDir, Long userId) {
+    Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+    Pageable p = PageRequest.of(pageNumber, pageSize, sort);
+
+    return fillFormRepository.findAllFillFormByReportingUserId(p, userId);
+  }
+
+  public void updateFillForm(Long fillFormId, String answers, LocalDateTime createdAt, boolean isSubmitted) {
+    System.out.println("=====================");
+    System.out.println(answers);
+    try {
+      fillFormRepository.updateFillForm(fillFormId, answers, createdAt, isSubmitted);
+    } catch (Exception e) {
+      // // TODO Auto-generated catch block
+      // e.printStackTrace();
+      System.out.println(e.getMessage());
+    }
   }
 }

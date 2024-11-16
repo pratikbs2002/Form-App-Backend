@@ -186,6 +186,7 @@ public class CreateFormController {
                 String questionsJson = objectMapper.writeValueAsString(createForm.get("questions"));
                 savedForm.setQuestions(questionsJson);
                 System.out.println(createForm);
+                System.out.println(questionsJson);
                 createFormService.updateForm(savedForm);
 
             } catch (Exception e) {

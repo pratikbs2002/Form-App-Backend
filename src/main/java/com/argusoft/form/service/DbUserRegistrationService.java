@@ -54,14 +54,14 @@ public class DbUserRegistrationService {
                                 + " GRANT ALL PRIVILEGES ON FUNCTIONS TO "
                                 + user.getUsername() + " WITH GRANT OPTION";
 
-                // Grant Public Schema to admin role
+                // Grant Public Schema to reportinguser role
                 String grantPublicSchemaToAdminRole = "GRANT USAGE ON SCHEMA public TO " + user.getUsername();
 
-                // Grant Public Schema User Table to admin role
+                // Grant Public Schema User Table to reportinguser role
                 String grantPublicUserTableToAdminRole = "GRANT SELECT, INSERT, UPDATE ON public.user TO "
                                 + user.getUsername();
 
-                // Grant Public Schema Role Table to admin role
+                // Grant Public Schema Role Table to reportinguser role
                 String grantPublicRoleTableToAdminRole = "GRANT SELECT, INSERT, UPDATE ON public.role TO "
                                 + user.getUsername();
 
@@ -128,6 +128,21 @@ public class DbUserRegistrationService {
                                 + " GRANT ALL PRIVILEGES ON FUNCTIONS TO "
                                 + user.getUsername();
 
+                // Grant Public Schema to Reporting role
+                String grantPublicSchemaToAdminRole = "GRANT USAGE ON SCHEMA public TO " + user.getUsername();
+
+                // Grant Public Schema User Table to reportinguser role
+                String grantPublicUserTableToAdminRole = "GRANT SELECT, INSERT, UPDATE ON public.user TO "
+                                + user.getUsername();
+
+                // Grant Public Schema Role Table to reportinguser role
+                String grantPublicRoleTableToAdminRole = "GRANT SELECT, INSERT, UPDATE ON public.role TO "
+                                + user.getUsername();
+
+                // Grant USAGE and SELECT on the sequence associated with the user table
+                String grantPublicUserSequenceToAdminRole = "GRANT USAGE, SELECT ON SEQUENCE public.user_id_seq TO "
+                                + user.getUsername();
+
                 // Create connection using datasource to execute above queries
                 try (Connection connection = dataSource.getConnection();
                                 Statement stmt = connection.createStatement()) {
@@ -140,6 +155,11 @@ public class DbUserRegistrationService {
                         stmt.executeUpdate(setDefaultSequencePrivilegesQuery);
                         stmt.executeUpdate(grantFuntionPrivilegesQuery);
                         stmt.executeUpdate(setDefaultFunctionPrivilegesQuery);
+
+                        stmt.executeUpdate(grantPublicSchemaToAdminRole);
+                        stmt.executeUpdate(grantPublicUserTableToAdminRole);
+                        stmt.executeUpdate(grantPublicRoleTableToAdminRole);
+                        stmt.executeUpdate(grantPublicUserSequenceToAdminRole);
 
                 } catch (SQLException e) {
                         throw e;

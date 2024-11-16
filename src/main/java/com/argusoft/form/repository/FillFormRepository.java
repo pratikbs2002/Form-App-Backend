@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.argusoft.form.entity.FillForm;
@@ -22,21 +23,22 @@ public interface FillFormRepository extends JpaRepository<FillForm, Long> {
         void insertFillForm(Long formId, Long userId, String answers, LocalDateTime createdAt, String location,
                         Long locationId, boolean isSubmitted);
 
-        @Transactional
-        @Modifying
-        @Query(value = "UPDATE fill_form SET form_id = :formId, user_id = :userId, answers = CAST(:answers AS jsonb), created_at = :createdAt, location = :location, location_id = :locationId, is_submitted = :isSubmitted  WHERE form_id = :formId AND user_id = :userId", nativeQuery = true)
-        void updateFillForm(Long formId, Long userId, String answers, LocalDateTime createdAt, String location,
-                        Integer locationId, boolean isSubmitted);
-
         @Query("SELECT f FROM FillForm f WHERE f.isSubmitted = false")
         Page<FillForm> getAllFillForm(Pageable p);
 
         // @Query(value = "SELECT * FROM fill_form WHERE id = :id", nativeQuery = true)
         // Optional<FillForm> getFillFormById(Long id);
 
+        @Query(value = "UPDATE fill_form SET answers = CAST(:answers AS jsonb),created_at = :createdAt, is_submitted = :isSubmitted WHERE id = :fillFormId", nativeQuery = true)
+        void updateFillForm(@Param("fillFormId") Long fillFormId, @Param("answers") String aAnswers,
+                        @Param("createdAt") LocalDateTime createdAt, @Param("isSubmitted") boolean isSubmitted);
+
         @Transactional
         @Modifying
         @Query(value = "DELETE FROM fill_form WHERE id = :id", nativeQuery = true)
         void deleteFillFormById(Long id);
+
+        @Query("SELECT f FROM FillForm f WHERE f.isSubmitted = false AND f.user.id = :userId")
+        Page<FillForm> findAllFillFormByReportingUserId(Pageable p, Long userId);
 
 }
