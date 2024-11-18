@@ -1,6 +1,7 @@
 package com.argusoft.form.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -28,7 +29,10 @@ public interface FillFormRepository extends JpaRepository<FillForm, Long> {
         Page<FillForm> getAllFillForm(Pageable p);
 
         @Query(value = "SELECT * FROM fill_form WHERE form_id = :id", nativeQuery = true)
-        Optional<FillForm> getFillFormByFormId(Long id);
+        List<FillForm> getFillFormByFormId(Long id);
+
+        @Query(value = "SELECT * FROM fill_form WHERE form_id = :formId AND user_id = :userId", nativeQuery = true)
+        Optional<FillForm> findFillFormByFormIdAndUserId(Long formId, Long userId);
 
         @Query(value = "UPDATE fill_form SET answers = CAST(:answers AS jsonb),created_at = :createdAt, is_submitted = :isSubmitted WHERE id = :fillFormId", nativeQuery = true)
         void updateFillForm(@Param("fillFormId") Long fillFormId, @Param("answers") String aAnswers,
@@ -41,5 +45,8 @@ public interface FillFormRepository extends JpaRepository<FillForm, Long> {
 
         @Query("SELECT f FROM FillForm f WHERE f.isSubmitted = false AND f.user.id = :userId")
         Page<FillForm> findAllFillFormByReportingUserId(Pageable p, Long userId);
+
+        @Query(value = "SELECT * FROM fill_form WHERE form_id IN :formIds AND is_submitted = true", nativeQuery = true)
+        Page<FillForm> findAllFillFormByFormIdsForAdmin(Pageable pageable, List<Long> formIds);
 
 }

@@ -1,5 +1,6 @@
 package com.argusoft.form.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.argusoft.form.entity.CreateForm;
+import com.argusoft.form.entity.UserInfo;
 import com.argusoft.form.repository.CreateFormRepository;
 
 @Service
@@ -26,6 +28,10 @@ public class CreateFormService {
 
     public Optional<CreateForm> findById(Long id) {
         return createFormRepository.findById(id);
+    }
+
+    public List<CreateForm> findFormsByAdmin(UserInfo adminUser) {
+        return createFormRepository.findByAdmin(adminUser);
     }
 
     public void save(CreateForm createForm) {
