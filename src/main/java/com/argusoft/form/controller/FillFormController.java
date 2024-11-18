@@ -394,4 +394,41 @@ public class FillFormController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
     }
   }
+  
+  @PutMapping("/update/save")
+  public ResponseEntity<String> updateSaveSubmittedForm(@RequestBody Map<String, Object> fillForm) {
+    if (!fillForm.containsKey("fillFormId")) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body("fillForm are required for updating the form.");
+    }
+
+    Long fillFormId = Long.parseLong(fillForm.get("fillFormId").toString());
+
+    Optional<FillForm> existingFormOptional = fillFormService.findById(fillFormId);
+    if (existingFormOptional.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Submitted form not found.");
+    }
+
+    System.out.println(existingFormOptional.get());
+    String answersJson;
+    LocalDateTime createdAt = LocalDateTime.now();
+
+    try {
+      if (fillForm.containsKey("answers")) {
+        System.out.println(fillForm.get("answers"));
+        answersJson = objectMapper.writeValueAsString(fillForm.get("answers"));
+        System.out.println(answersJson);
+      } else {
+        answersJson = existingFormOptional.get().getAnswers();
+      }
+
+      fillFormService.updateFillForm(fillFormId, answersJson, createdAt, false);
+
+      return ResponseEntity.status(HttpStatus.OK).body("Form updated successfully.");
+    } catch (JsonProcessingException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error processing JSON: " + e.getMessage());
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
+    }
+  }
 }
