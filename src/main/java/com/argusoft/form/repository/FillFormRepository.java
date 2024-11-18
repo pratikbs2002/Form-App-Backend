@@ -1,6 +1,7 @@
 package com.argusoft.form.repository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,8 +27,8 @@ public interface FillFormRepository extends JpaRepository<FillForm, Long> {
         @Query("SELECT f FROM FillForm f WHERE f.isSubmitted = false")
         Page<FillForm> getAllFillForm(Pageable p);
 
-        // @Query(value = "SELECT * FROM fill_form WHERE id = :id", nativeQuery = true)
-        // Optional<FillForm> getFillFormById(Long id);
+        @Query(value = "SELECT * FROM fill_form WHERE form_id = :id", nativeQuery = true)
+        Optional<FillForm> getFillFormByFormId(Long id);
 
         @Query(value = "UPDATE fill_form SET answers = CAST(:answers AS jsonb),created_at = :createdAt, is_submitted = :isSubmitted WHERE id = :fillFormId", nativeQuery = true)
         void updateFillForm(@Param("fillFormId") Long fillFormId, @Param("answers") String aAnswers,

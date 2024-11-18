@@ -52,6 +52,10 @@ public class FillFormService {
     return fillFormRepository.findById(id);
   }
 
+  public Optional<FillForm> findByFormId(Long formId) {
+    return fillFormRepository.getFillFormByFormId(formId);
+  }
+
   public Page<FillForm> findAll(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
 
     Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();

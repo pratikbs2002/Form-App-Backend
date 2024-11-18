@@ -367,7 +367,7 @@ public class FillFormController {
 
     Long fillFormId = Long.parseLong(fillForm.get("fillFormId").toString());
 
-    Optional<FillForm> existingFormOptional = fillFormService.findById(fillFormId);
+    Optional<FillForm> existingFormOptional = fillFormService.findByFormId(fillFormId);
     if (existingFormOptional.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Submitted form not found.");
     }
