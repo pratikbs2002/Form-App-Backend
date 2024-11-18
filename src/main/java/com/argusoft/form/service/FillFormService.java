@@ -73,13 +73,9 @@ public class FillFormService {
   }
 
   public void updateFillForm(Long fillFormId, String answers, LocalDateTime createdAt, boolean isSubmitted) {
-    System.out.println("=====================");
-    System.out.println(answers);
     try {
       fillFormRepository.updateFillForm(fillFormId, answers, createdAt, isSubmitted);
     } catch (Exception e) {
-      // // TODO Auto-generated catch block
-      // e.printStackTrace();
       System.out.println(e.getMessage());
     }
   }

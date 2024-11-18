@@ -1,7 +1,6 @@
 package com.argusoft.form.controller;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,13 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.argusoft.form.dto.AnswerDTO;
 import com.argusoft.form.dto.FillFormDTO;
 import com.argusoft.form.dto.FillFormResponseDTO;
-import com.argusoft.form.dto.RoleDTO;
-import com.argusoft.form.dto.UserInfoDTO;
 import com.argusoft.form.entity.CreateForm;
 import com.argusoft.form.entity.FillForm;
 import com.argusoft.form.entity.Location;
 import com.argusoft.form.entity.LocationPoint;
-import com.argusoft.form.entity.LocationPointConverter;
 import com.argusoft.form.entity.UserInfo;
 import com.argusoft.form.service.CreateFormService;
 import com.argusoft.form.service.FillFormService;
@@ -372,20 +368,17 @@ public class FillFormController {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Submitted form not found.");
     }
 
-    System.out.println(existingFormOptional.get());
     String answersJson;
     LocalDateTime createdAt = LocalDateTime.now();
 
     try {
       if (fillForm.containsKey("answers")) {
-        System.out.println(fillForm.get("answers"));
         answersJson = objectMapper.writeValueAsString(fillForm.get("answers"));
-        System.out.println(answersJson);
       } else {
         answersJson = existingFormOptional.get().getAnswers();
       }
 
-      fillFormService.updateFillForm(fillFormId, answersJson, createdAt, true);
+      fillFormService.updateFillForm(existingFormOptional.get().getId(), answersJson, createdAt, true);
 
       return ResponseEntity.status(HttpStatus.OK).body("Form updated successfully.");
     } catch (JsonProcessingException e) {
@@ -394,7 +387,7 @@ public class FillFormController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
     }
   }
-  
+
   @PutMapping("/update/save")
   public ResponseEntity<String> updateSaveSubmittedForm(@RequestBody Map<String, Object> fillForm) {
     if (!fillForm.containsKey("fillFormId")) {
@@ -404,25 +397,22 @@ public class FillFormController {
 
     Long fillFormId = Long.parseLong(fillForm.get("fillFormId").toString());
 
-    Optional<FillForm> existingFormOptional = fillFormService.findById(fillFormId);
+    Optional<FillForm> existingFormOptional = fillFormService.findByFormId(fillFormId);
     if (existingFormOptional.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Submitted form not found.");
     }
 
-    System.out.println(existingFormOptional.get());
     String answersJson;
     LocalDateTime createdAt = LocalDateTime.now();
 
     try {
       if (fillForm.containsKey("answers")) {
-        System.out.println(fillForm.get("answers"));
         answersJson = objectMapper.writeValueAsString(fillForm.get("answers"));
-        System.out.println(answersJson);
       } else {
         answersJson = existingFormOptional.get().getAnswers();
       }
 
-      fillFormService.updateFillForm(fillFormId, answersJson, createdAt, false);
+      fillFormService.updateFillForm(existingFormOptional.get().getId(), answersJson, createdAt, false);
 
       return ResponseEntity.status(HttpStatus.OK).body("Form updated successfully.");
     } catch (JsonProcessingException e) {
