@@ -121,6 +121,7 @@ public class FillFormController {
     System.out.println(fillForm);
     if (fillForm != null) {
       fillFormDTO.setId(fillForm.getId());
+      fillFormDTO.setTitle(fillForm.getTitle());
       fillFormDTO.setFormId(fillForm.getForm().getId());
       fillFormDTO.setUserId(fillForm.getUserInfo().getId());
       fillFormDTO.setLocationId(fillForm.getLocation().getId());
@@ -132,8 +133,9 @@ public class FillFormController {
               new TypeReference<List<AnswerDTO>>() {
               });
           fillFormDTO.setAnswers(answersList);
+        } else {
+          fillFormDTO.setAnswers(null);
         }
-        fillFormDTO.setAnswers(null);
 
       } catch (Exception e) {
         System.out.println(e.getMessage());
