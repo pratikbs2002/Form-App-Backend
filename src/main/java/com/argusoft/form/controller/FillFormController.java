@@ -373,6 +373,7 @@ public class FillFormController {
     }
   }
 
+
   @PutMapping("/update/save")
   public ResponseEntity<String> updateSaveSubmittedForm(@RequestBody Map<String, Object> fillForm) {
     if (!fillForm.containsKey("fillFormId")) {
@@ -402,7 +403,7 @@ public class FillFormController {
         answersJson = existingFormOptional.get().getAnswers();
       }
 
-      fillFormService.updateFillForm(fillFormId, answersJson, createdAt, false);
+      fillFormService.updateFillForm(existingFormOptional.get().getId(), answersJson, createdAt, false);
 
       return ResponseEntity.status(HttpStatus.OK).body("Form updated successfully.");
     } catch (JsonProcessingException e) {
