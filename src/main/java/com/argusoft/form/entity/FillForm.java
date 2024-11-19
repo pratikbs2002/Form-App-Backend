@@ -24,6 +24,8 @@ public class FillForm {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    private String title;
+
     @Column(columnDefinition = "loc", name = "location")
     @Convert(converter = LocationPointConverter.class)
     private LocationPoint locationPoint;
@@ -47,7 +49,7 @@ public class FillForm {
     }
 
     public FillForm(Long id, String answers, LocalDateTime createdAt, LocationPoint locationPoint, CreateForm form,
-            UserInfo user, Location location, boolean isSubmitted) {
+            UserInfo user, Location location, boolean isSubmitted, String title) {
         this.id = id;
         this.answers = answers;
         this.createdAt = createdAt;
@@ -56,6 +58,7 @@ public class FillForm {
         this.user = user;
         this.location = location;
         this.isSubmitted = isSubmitted;
+        this.title = title;
     }
 
     public Long getId() {
@@ -130,11 +133,19 @@ public class FillForm {
         this.isSubmitted = isSubmitted;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     @Override
     public String toString() {
-        return "FillForm [id=" + id + ", answers=" + answers + ", createdAt=" + createdAt + ", locationPoint="
-                + locationPoint + ", form=" + form + ", user=" + user + ", location=" + location + ", isSubmitted="
-                + isSubmitted + "]";
+        return "FillForm [id=" + id + ", answers=" + answers + ", createdAt=" + createdAt + ", title=" + title
+                + ", locationPoint=" + locationPoint + ", form=" + form + ", user=" + user + ", location=" + location
+                + ", isSubmitted=" + isSubmitted + "]";
     }
 
 }

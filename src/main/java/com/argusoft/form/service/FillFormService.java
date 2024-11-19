@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.argusoft.form.dto.FillFormDTO;
 import com.argusoft.form.entity.CreateForm;
 import com.argusoft.form.entity.FillForm;
 import com.argusoft.form.entity.LocationPointConverter;
@@ -20,6 +21,7 @@ import com.argusoft.form.entity.UserInfo;
 import com.argusoft.form.repository.FillFormRepository;
 
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 
 @Service
 public class FillFormService {
@@ -51,22 +53,22 @@ public class FillFormService {
     }
   }
 
-  public Optional<FillForm> findById(Long id) {
-    return fillFormRepository.findById(id);
+  public FillForm getFillFormById(Long id) {
+    return fillFormRepository.findById(id).get();
   }
 
-  public List<FillForm> findByFormId(Long formId) {
-    return fillFormRepository.getFillFormByFormId(formId);
+  public List<FillForm> getFillFormByFormId(Long formId) {
+    return fillFormRepository.findFillFormByFormId(formId);
   }
 
   public Optional<FillForm> getFillFormByFormIdAndUserId(Long formId, Long userId) {
     return fillFormRepository.findFillFormByFormIdAndUserId(formId, userId);
   }
 
-  public Page<FillForm> findAll(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
+  public Page<FillForm> getAllFillForm(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
     Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
     Pageable p = PageRequest.of(pageNumber, pageSize, sort);
-    return fillFormRepository.getAllFillForm(p);
+    return fillFormRepository.findAllFillForm(p);
   }
 
   public Page<FillForm> getAllFillFormByReportingUserId(Integer pageNumber, Integer pageSize, String sortBy,
@@ -94,10 +96,13 @@ public class FillFormService {
   }
 
   public void updateFillForm(Long fillFormId, String answers, LocalDateTime createdAt, boolean isSubmitted) {
-    // try {
-      fillFormRepository.updateFillForm(fillFormId, answers, createdAt, isSubmitted);
-    // } catch (Exception e) {
-    //   throw new RuntimeException("Failed to update fill form with ID: " + fillFormId, e);
-    // }
+    int x = 0;
+    try {
+      x = fillFormRepository.updateFillForm(fillFormId, answers, createdAt, isSubmitted);
+
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      System.out.println("x value" + x);
+    }
   }
 }

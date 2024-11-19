@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.argusoft.form.dto.FillFormDTO;
 import com.argusoft.form.entity.FillForm;
 
 import jakarta.transaction.Transactional;
@@ -26,16 +27,19 @@ public interface FillFormRepository extends JpaRepository<FillForm, Long> {
                         Long locationId, boolean isSubmitted);
 
         @Query("SELECT f FROM FillForm f WHERE f.isSubmitted = false")
-        Page<FillForm> getAllFillForm(Pageable p);
+        Page<FillForm> findAllFillForm(Pageable p);
+
+        @Query(value = "SELECT * FROM fill_form WHERE id = :id", nativeQuery = true)
+        FillForm findFillFormByFillFormId(Long id);
 
         @Query(value = "SELECT * FROM fill_form WHERE form_id = :id", nativeQuery = true)
-        List<FillForm> getFillFormByFormId(Long id);
+        List<FillForm> findFillFormByFormId(Long id);
 
         @Query(value = "SELECT * FROM fill_form WHERE form_id = :formId AND user_id = :userId", nativeQuery = true)
         Optional<FillForm> findFillFormByFormIdAndUserId(Long formId, Long userId);
 
         @Query(value = "UPDATE fill_form SET answers = CAST(:answers AS jsonb),created_at = :createdAt, is_submitted = :isSubmitted WHERE id = :fillFormId", nativeQuery = true)
-        void updateFillForm(@Param("fillFormId") Long fillFormId, @Param("answers") String aAnswers,
+        int updateFillForm(@Param("fillFormId") Long fillFormId, @Param("answers") String answers,
                         @Param("createdAt") LocalDateTime createdAt, @Param("isSubmitted") boolean isSubmitted);
 
         @Transactional

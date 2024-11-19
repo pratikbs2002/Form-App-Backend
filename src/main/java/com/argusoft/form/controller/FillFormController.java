@@ -116,10 +116,9 @@ public class FillFormController {
 
   @GetMapping("/{id}")
   public ResponseEntity<?> getSubmittedForm(@PathVariable Long id) {
-    FillForm fillForm = fillFormService.findById(id).orElse(null);
-
+    FillForm fillForm = fillFormService.getFillFormById(id);
     FillFormDTO fillFormDTO = new FillFormDTO();
-
+    System.out.println(fillForm);
     if (fillForm != null) {
       fillFormDTO.setId(fillForm.getId());
       fillFormDTO.setFormId(fillForm.getForm().getId());
@@ -128,15 +127,20 @@ public class FillFormController {
       fillFormDTO.setLocation(fillForm.getLocationPoint());
       fillFormDTO.setCreatedAt(fillForm.getCreatedAt());
       try {
-        List<AnswerDTO> answersList = objectMapper.readValue(fillForm.getAnswers(),
-            new TypeReference<List<AnswerDTO>>() {
-            });
-        fillFormDTO.setAnswers(answersList);
+        if (fillForm.getAnswers() != null) {
+          List<AnswerDTO> answersList = objectMapper.readValue(fillForm.getAnswers(),
+              new TypeReference<List<AnswerDTO>>() {
+              });
+          fillFormDTO.setAnswers(answersList);
+        }
+        fillFormDTO.setAnswers(null);
+
       } catch (Exception e) {
+        System.out.println(e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
       }
     }
-
+    System.out.println(fillFormDTO);
     return ResponseEntity.ok(fillFormDTO);
   }
 
@@ -150,7 +154,7 @@ public class FillFormController {
     Page<FillForm> pageFillForm;
 
     if ((sortBy).equalsIgnoreCase("title")) {
-      pageFillForm = fillFormService.findAll(pageNumber, pageSize, "id", sortDir);
+      pageFillForm = fillFormService.getAllFillForm(pageNumber, pageSize, "id", sortDir);
 
       List<FillForm> sortedContent = pageFillForm.getContent().stream()
           .sorted((f1, f2) -> {
@@ -167,7 +171,7 @@ public class FillFormController {
       pageFillForm = new PageImpl<>(sortedContent, PageRequest.of(pageNumber, pageSize),
           pageFillForm.getTotalElements());
     } else {
-      pageFillForm = fillFormService.findAll(pageNumber, pageSize, sortBy, sortDir);
+      pageFillForm = fillFormService.getAllFillForm(pageNumber, pageSize, sortBy, sortDir);
     }
 
     FillFormResponseDTO fillFormResponseDTO = new FillFormResponseDTO();
@@ -206,7 +210,7 @@ public class FillFormController {
 
   @DeleteMapping("/remove/{id}")
   public ResponseEntity<Void> deleteSubmittedForm(@PathVariable Long id) {
-    if (fillFormService.findById(id).isPresent()) {
+    if (fillFormService.getFillFormById(id) != null) {
       fillFormService.deleteById(id);
       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     } else {
@@ -362,9 +366,7 @@ public class FillFormController {
       } else {
         answersJson = existingFormOptional.get().getAnswers();
       }
-
       fillFormService.updateFillForm(existingFormOptional.get().getId(), answersJson, createdAt, true);
-
       return ResponseEntity.status(HttpStatus.OK).body("Form updated successfully.");
     } catch (JsonProcessingException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error processing JSON: " + e.getMessage());
@@ -373,9 +375,9 @@ public class FillFormController {
     }
   }
 
-
   @PutMapping("/update/save")
   public ResponseEntity<String> updateSaveSubmittedForm(@RequestBody Map<String, Object> fillForm) {
+    System.out.println("********************************");
     if (!fillForm.containsKey("fillFormId")) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body("fillForm are required for updating the form.");
@@ -402,9 +404,8 @@ public class FillFormController {
       } else {
         answersJson = existingFormOptional.get().getAnswers();
       }
-
+      System.out.println("=============");
       fillFormService.updateFillForm(existingFormOptional.get().getId(), answersJson, createdAt, false);
-
       return ResponseEntity.status(HttpStatus.OK).body("Form updated successfully.");
     } catch (JsonProcessingException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error processing JSON: " + e.getMessage());
