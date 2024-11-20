@@ -228,6 +228,7 @@ public class FillFormController {
       Optional<CreateForm> formOptional = createFormService.findById(formId);
       if (formOptional.isPresent()) {
         submittedForm.setForm(formOptional.get());
+        submittedForm.setTitle(formOptional.get().getTitle());
       } else {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body("Form not found");
@@ -247,10 +248,10 @@ public class FillFormController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body("Location not found");
       }
-
-      List<UserInfo> users = userInfoService.getUsersByLocation(locationId);
+      List<UserInfo> users = userInfoService.getUsersByLocationAndChildLocations(locationId);
       for (UserInfo userInfo : users) {
         FillForm fillForm = new FillForm();
+        fillForm.setTitle(submittedForm.getTitle());
         fillForm.setForm(submittedForm.getForm());
         fillForm.setAnswers(null);
         fillForm.setLocation(submittedForm.getLocation());

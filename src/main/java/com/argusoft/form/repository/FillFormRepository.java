@@ -22,8 +22,9 @@ public interface FillFormRepository extends JpaRepository<FillForm, Long> {
 
         @Transactional
         @Modifying
-        @Query(value = "INSERT INTO fill_form (form_id, user_id, answers, created_at, location, location_id, is_submitted) VALUES (:formId, :userId, CAST(:answers AS jsonb), :createdAt, CAST(:location AS loc), :locationId, :isSubmitted)", nativeQuery = true)
-        void insertFillForm(Long formId, Long userId, String answers, LocalDateTime createdAt, String location,
+        @Query(value = "INSERT INTO fill_form (form_id, user_id, title, answers, created_at, location, location_id, is_submitted) VALUES (:formId, :userId, :title, CAST(:answers AS jsonb), :createdAt, CAST(:location AS loc), :locationId, :isSubmitted)", nativeQuery = true)
+        void insertFillForm(Long formId, Long userId, String title, String answers, LocalDateTime createdAt,
+                        String location,
                         Long locationId, boolean isSubmitted);
 
         @Query("SELECT f FROM FillForm f WHERE f.isSubmitted = false")

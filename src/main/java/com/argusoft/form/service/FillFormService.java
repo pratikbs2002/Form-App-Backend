@@ -41,7 +41,8 @@ public class FillFormService {
   public void save(FillForm fillForm) {
     LocationPointConverter locationPointConverter = new LocationPointConverter();
     String points = locationPointConverter.convertToDatabaseColumn(fillForm.getLocationPoint());
-    fillFormRepository.insertFillForm(fillForm.getForm().getId(), fillForm.getUserInfo().getId(), fillForm.getAnswers(),
+    fillFormRepository.insertFillForm(fillForm.getForm().getId(), fillForm.getUserInfo().getId(), fillForm.getTitle(),
+        fillForm.getAnswers(),
         fillForm.getCreatedAt(), points, fillForm.getLocation().getId(), fillForm.getIsSubmitted());
   }
 
